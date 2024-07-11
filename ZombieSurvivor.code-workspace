@@ -1,0 +1,865 @@
+{
+	"folders": [
+		{
+			"name": "ZombieSurvivor",
+			"path": "."
+		},
+		{
+			"name": "UE5",
+			"path": "/run/media/M2/Code/UE"
+		}
+	],
+	"settings": {
+		"typescript.tsc.autoDetect": "off",
+		"npm.autoDetect": "off"
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.cpptools",
+			"ms-dotnettools.csharp"
+		]
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "ZombieSurvivor Linux Debug Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"Linux",
+					"Debug",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor Linux Debug Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"Linux",
+					"Debug",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"ZombieSurvivor Linux Debug Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor Linux Debug Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"Linux",
+					"Debug",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor Linux DebugGame Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"Linux",
+					"DebugGame",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor Linux DebugGame Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"Linux",
+					"DebugGame",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"ZombieSurvivor Linux DebugGame Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor Linux DebugGame Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"Linux",
+					"DebugGame",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor Linux Development Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"Linux",
+					"Development",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor Linux Development Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"Linux",
+					"Development",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"ZombieSurvivor Linux Development Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor Linux Development Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"Linux",
+					"Development",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor Linux Test Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"Linux",
+					"Test",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor Linux Test Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"Linux",
+					"Test",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"ZombieSurvivor Linux Test Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor Linux Test Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"Linux",
+					"Test",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor Linux Shipping Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"Linux",
+					"Shipping",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor Linux Shipping Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"Linux",
+					"Shipping",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"ZombieSurvivor Linux Shipping Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor Linux Shipping Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"Linux",
+					"Shipping",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor LinuxArm64 Debug Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"LinuxArm64",
+					"Debug",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor LinuxArm64 Debug Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"LinuxArm64",
+					"Debug",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"ZombieSurvivor LinuxArm64 Debug Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor LinuxArm64 Debug Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"LinuxArm64",
+					"Debug",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor LinuxArm64 DebugGame Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"LinuxArm64",
+					"DebugGame",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor LinuxArm64 DebugGame Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"LinuxArm64",
+					"DebugGame",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"ZombieSurvivor LinuxArm64 DebugGame Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor LinuxArm64 DebugGame Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"LinuxArm64",
+					"DebugGame",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor LinuxArm64 Development Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"LinuxArm64",
+					"Development",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor LinuxArm64 Development Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"LinuxArm64",
+					"Development",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"ZombieSurvivor LinuxArm64 Development Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor LinuxArm64 Development Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"LinuxArm64",
+					"Development",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor LinuxArm64 Test Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"LinuxArm64",
+					"Test",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor LinuxArm64 Test Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"LinuxArm64",
+					"Test",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"ZombieSurvivor LinuxArm64 Test Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor LinuxArm64 Test Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"LinuxArm64",
+					"Test",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor LinuxArm64 Shipping Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"LinuxArm64",
+					"Shipping",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor LinuxArm64 Shipping Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"LinuxArm64",
+					"Shipping",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"ZombieSurvivor LinuxArm64 Shipping Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivor LinuxArm64 Shipping Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivor",
+					"LinuxArm64",
+					"Shipping",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivorEditor Linux Debug Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivorEditor",
+					"Linux",
+					"Debug",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivorEditor Linux Debug Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivorEditor",
+					"Linux",
+					"Debug",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"ZombieSurvivorEditor Linux Debug Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivorEditor Linux Debug Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivorEditor",
+					"Linux",
+					"Debug",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivorEditor Linux DebugGame Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivorEditor",
+					"Linux",
+					"DebugGame",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivorEditor Linux DebugGame Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivorEditor",
+					"Linux",
+					"DebugGame",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"ZombieSurvivorEditor Linux DebugGame Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivorEditor Linux DebugGame Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivorEditor",
+					"Linux",
+					"DebugGame",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivorEditor Linux Development Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivorEditor",
+					"Linux",
+					"Development",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivorEditor Linux Development Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivorEditor",
+					"Linux",
+					"Development",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"ZombieSurvivorEditor Linux Development Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			},
+			{
+				"label": "ZombieSurvivorEditor Linux Development Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"ZombieSurvivorEditor",
+					"Linux",
+					"Development",
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/run/media/M2/Code/UE"
+				}
+			}
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Launch ZombieSurvivor (Debug)",
+				"request": "launch",
+				"program": "/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/Binaries/Linux/UnrealGame-Linux-Debug",
+				"preLaunchTask": "ZombieSurvivor Linux Debug Build",
+				"args": [
+				],
+				"cwd": "/run/media/M2/Code/UE",
+				"type": "cppdbg",
+				"visualizerFile": "/run/media/M2/Code/UE/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch ZombieSurvivor (DebugGame)",
+				"request": "launch",
+				"program": "/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/Binaries/Linux/UnrealGame-Linux-DebugGame",
+				"preLaunchTask": "ZombieSurvivor Linux DebugGame Build",
+				"args": [
+				],
+				"cwd": "/run/media/M2/Code/UE",
+				"type": "cppdbg",
+				"visualizerFile": "/run/media/M2/Code/UE/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch ZombieSurvivor (Development)",
+				"request": "launch",
+				"program": "/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/Binaries/Linux/UnrealGame",
+				"preLaunchTask": "ZombieSurvivor Linux Development Build",
+				"args": [
+				],
+				"cwd": "/run/media/M2/Code/UE",
+				"type": "cppdbg",
+				"visualizerFile": "/run/media/M2/Code/UE/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch ZombieSurvivor (Test)",
+				"request": "launch",
+				"program": "/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/Binaries/Linux/UnrealGame-Linux-Test",
+				"preLaunchTask": "ZombieSurvivor Linux Test Build",
+				"args": [
+				],
+				"cwd": "/run/media/M2/Code/UE",
+				"type": "cppdbg",
+				"visualizerFile": "/run/media/M2/Code/UE/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch ZombieSurvivor (Shipping)",
+				"request": "launch",
+				"program": "/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/Binaries/Linux/UnrealGame-Linux-Shipping",
+				"preLaunchTask": "ZombieSurvivor Linux Shipping Build",
+				"args": [
+				],
+				"cwd": "/run/media/M2/Code/UE",
+				"type": "cppdbg",
+				"visualizerFile": "/run/media/M2/Code/UE/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch ZombieSurvivorEditor (Debug)",
+				"request": "launch",
+				"program": "/run/media/M2/Code/UE/Engine/Binaries/Linux/UnrealEditor-Linux-Debug",
+				"preLaunchTask": "ZombieSurvivorEditor Linux Debug Build",
+				"args": [
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject"
+				],
+				"cwd": "/run/media/M2/Code/UE",
+				"type": "cppdbg",
+				"visualizerFile": "/run/media/M2/Code/UE/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch ZombieSurvivorEditor (DebugGame)",
+				"request": "launch",
+				"program": "/run/media/M2/Code/UE/Engine/Binaries/Linux/UnrealEditor-Linux-DebugGame",
+				"preLaunchTask": "ZombieSurvivorEditor Linux DebugGame Build",
+				"args": [
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject"
+				],
+				"cwd": "/run/media/M2/Code/UE",
+				"type": "cppdbg",
+				"visualizerFile": "/run/media/M2/Code/UE/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch ZombieSurvivorEditor (Development)",
+				"request": "launch",
+				"program": "/run/media/M2/Code/UE/Engine/Binaries/Linux/UnrealEditor",
+				"preLaunchTask": "ZombieSurvivorEditor Linux Development Build",
+				"args": [
+					"/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject"
+				],
+				"cwd": "/run/media/M2/Code/UE",
+				"type": "cppdbg",
+				"visualizerFile": "/run/media/M2/Code/UE/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Generate Project Files",
+				"type": "coreclr",
+				"request": "launch",
+				"preLaunchTask": "UnrealBuildTool Linux Development Build",
+				"program": "/run/media/M2/Code/UE/Engine/Build/BatchFiles/RunUBT.bat",
+				"args": [
+					"-projectfiles",
+					"-vscode",
+					"-project=/run/media/M2/Games/epic/drive_c/users/tbf/My Documents/Unreal Projects/Basic/TopDown/ZombieSurvivor/ZombieSurvivor.uproject",
+					"-game",
+					"-engine",
+					"-dotnet"
+				],
+				"console": "internalConsole",
+				"internalConsoleOptions": "openOnSessionStart",
+				"stopAtEntry": false,
+				"cwd": "/run/media/M2/Code/UE"
+			}
+		]
+	}
+}

@@ -10,10 +10,10 @@ public class ZombieSurvivor : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
-			"Core", 
-			"CoreUObject", 
-			"Engine", 
-			"InputCore", 
+			"Core",
+			"CoreUObject",
+			"Engine",
+			"InputCore",
 			"EnhancedInput",
 			"Paper2D",
 			"EnhancedInput"

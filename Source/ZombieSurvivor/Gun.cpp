@@ -3,15 +3,31 @@
 
 #include "Gun.h"
 
-#include "TopDownCharacter.h"
-
-
 AGun::AGun()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	FlipBookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("FlipbBook Comp"));
 	SetRootComponent(FlipBookComponent);
+
+	// Initialize Array size
+	GunMuzzles.SetNum(4);
+
+	// Create and Attach Components
+	static const TCHAR* GunMuzzleNames[] =
+	{
+		TEXT("MuzzleUp"),	
+		TEXT("MuzzleDown"),	
+		TEXT("MuzzleLeft"),	
+		TEXT("MuzzleRight"),	
+	};
+
+	for (int8 i = 0; i < GunMuzzles.Num(); ++i)
+	{
+		GunMuzzles[i] = CreateDefaultSubobject<USceneComponent>(GunMuzzleNames[i]);
+		GunMuzzles[i]->SetupAttachment(RootComponent);
+	}
+	
 }
 
 void AGun::BeginPlay()
@@ -57,6 +73,13 @@ void AGun::SetAnimation(const bool bIsMoving, const EDirectionFacing& Direction)
 			break;
 		}
 	}
+}
+
+void AGun::Shoot(const EDirectionFacing& Facing)
+{
+	// Start Location
+	// Direction
+	// Spawn Bullet
 }
 
 void AGun::RotateTowardsMouse(const FVector2D& MouseLocation)

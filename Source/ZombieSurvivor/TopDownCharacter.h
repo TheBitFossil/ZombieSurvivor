@@ -35,6 +35,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Weapon)
 	TObjectPtr<UChildActorComponent> GunChildActor;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<USceneComponent> Marker;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UPaperFlipbookComponent> MarkerSprite;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=Weapon)
 	TSubclassOf<class AGun> GunClass;
 	
@@ -123,6 +129,9 @@ private:
 
 	UFUNCTION()
 	void EquipGun();
+
+	UFUNCTION()
+	void CalculateMousePositionInWorld();
 	
 	
 };

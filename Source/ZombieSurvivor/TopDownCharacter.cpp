@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Gun.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 ATopDownCharacter::ATopDownCharacter()
@@ -25,6 +26,11 @@ ATopDownCharacter::ATopDownCharacter()
 	{
 		GunChildActor->SetChildActorClass(AGun::StaticClass());
 	}
+
+	Marker = CreateDefaultSubobject<USceneComponent>(TEXT("Marker"));
+	Marker->SetupAttachment(RootComponent);
+	MarkerSprite = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("MarkerSprite"));
+	MarkerSprite->SetupAttachment(Marker);
 }
 
 void ATopDownCharacter::BeginPlay()
@@ -33,6 +39,8 @@ void ATopDownCharacter::BeginPlay()
 
 	if (APlayerController* PC = static_cast<APlayerController*>(Controller))
 	{
+		PC->SetShowMouseCursor(true);
+		
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
 			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 		{
@@ -125,7 +133,8 @@ bool ATopDownCharacter::IsInMapBoundsVertical(float ZPos)
 void ATopDownCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	CalculateMousePositionInWorld();
+	
 	if (bCanMove)
 	{
 		if (Direction.Length() != 0.f)
@@ -212,5 +221,21 @@ void ATopDownCharacter::EquipGun()
 		Gun->SetOwner(this);
 		Gun->bIsEquipped = bHasGunEquipped;
 		Gun->SetActorHiddenInGame(!bHasGunEquipped);
+	}
+}
+void ATopDownCharacter::CalculateMousePositionInWorld()
+{
+	if(APlayerController* PC = static_cast<APlayerController*>(Controller))
+	{
+		FVector WorldLocation, WorldDirection;
+		bool MouseWorldPos = PC->DeprojectMousePositionToWorld(WorldLocation, WorldDirection);
+
+		FVector Location = GetActorLocation();
+		FVector Start = FVector(Location.X, 0.f, Location.Z);
+		FVector Target = FVector(WorldLocation.X, 0.f, WorldLocation.Z);
+		// Only use 2D Vector for Rotation
+		FRotator Rotation = UKismetMathLibrary::FindLookAtRotation(Start, Target);
+
+		Marker->SetRelativeRotation(Rotation);
 	}
 }

@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "PaperFlipbookComponent.h"
-#include "TopDownCharacter.h"
 #include "GameFramework/Actor.h"
 #include "Gun.generated.h"
+
+class ABullet;
+class ATopDownCharacter;
 
 UCLASS()
 class ZOMBIESURVIVOR_API AGun : public AActor
@@ -27,6 +29,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=Weapon)
 	TArray<TObjectPtr<USceneComponent>> GunMuzzles;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapon)
+	TSubclassOf<ABullet> BulletClass;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool bIsEquipped {};

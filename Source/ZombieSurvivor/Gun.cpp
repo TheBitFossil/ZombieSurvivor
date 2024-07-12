@@ -1,7 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Gun.h"
+
+#include "Bullet.h"
+#include "TopDownCharacter.h"
 
 AGun::AGun()
 {
@@ -77,9 +79,24 @@ void AGun::SetAnimation(const bool bIsMoving, const EDirectionFacing& Direction)
 
 void AGun::Shoot(const EDirectionFacing& Facing)
 {
-	// Start Location
-	// Direction
+	int8 idx = static_cast<int8>(Facing);
+
+	FVector SpawnLocation = GunMuzzles[idx]->GetComponentLocation();
+	FRotator SpawnRotation = GunMuzzles[idx]->GetComponentRotation();
 	// Spawn Bullet
+	if(BulletClass)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = GetInstigator();
+
+		ABullet* NewBullet = GetWorld()->SpawnActor<ABullet>
+			(BulletClass, SpawnLocation, SpawnRotation, SpawnParams);
+		if(NewBullet)
+		{
+			
+		}
+	}
 }
 
 void AGun::RotateTowardsMouse(const FVector2D& MouseLocation)

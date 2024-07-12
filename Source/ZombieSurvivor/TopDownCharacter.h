@@ -32,10 +32,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UPaperFlipbookComponent> FlipBookComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Weapon)
 	TObjectPtr<UChildActorComponent> GunChildActor;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=Weapon)
 	TSubclassOf<class AGun> GunClass;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)

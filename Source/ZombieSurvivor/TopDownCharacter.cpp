@@ -100,6 +100,7 @@ void ATopDownCharacter::ChangeFlipBookAnimation(bool bEquipped)
 		}
 	}
 }
+
 void ATopDownCharacter::UpdateGunAnimation(bool bEquipped)
 {
 	if(bEquipped)
@@ -193,8 +194,14 @@ void ATopDownCharacter::MoveCompleted(const FInputActionValue& Value)
 
 void ATopDownCharacter::Shoot(const FInputActionValue& Value)
 {
-	// Get Facing Direction
-	// Play Animation
+	// Get Gun and call its shoot
+	if(AGun* Gun = static_cast<AGun*>(GunChildActor->GetChildActor()))
+	{
+		Gun->Shoot(GetDirectionFacing());
+	}
+	// Subtract Bullets ?
+	// Cooldown ?
+	// Play Animation/VFX ?
 }
 
 void ATopDownCharacter::EquipGun()

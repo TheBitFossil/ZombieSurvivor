@@ -5,6 +5,7 @@
 
 #include "TopDownCharacter.h"
 
+
 AGun::AGun()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -16,49 +17,47 @@ AGun::AGun()
 void AGun::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	SetActorHiddenInGame(true);
 }
 
-void AGun::UpdateAnimation() const
+void AGun::SetAnimation(const bool bIsMoving, const EDirectionFacing& Direction) const
 {
+	
+	// Either Running or Idling
+	TArray<UPaperFlipbook*> NextFlipBook;
 	if(!bIsEquipped)
 	{
 		return;
 	}
 	
-	if(ATopDownCharacter* OwnerCharacter = static_cast<ATopDownCharacter*>(GetOwner()))
+	if(bIsMoving)
 	{
-		TArray<UPaperFlipbook*> NextFlipBook;
-		if (OwnerCharacter->GetDirection().Length() != 0.f)
+		NextFlipBook = FB_Walk;
+	}
+	else
+	{
+		NextFlipBook = FB_Idle;
+	}
+
+	if (!NextFlipBook.IsEmpty() && FlipBookComponent != nullptr)
+	{
+		switch (Direction)
 		{
-			NextFlipBook = FB_Walk;
-		}
-		else
-		{
-			NextFlipBook = FB_Idle;
-		}
-			
-		if (!NextFlipBook.IsEmpty() && FlipBookComponent != nullptr)
-		{
-			switch (OwnerCharacter->GetDirectionFacing())
-			{
-			case EDirectionFacing::UP:
-				FlipBookComponent->SetFlipbook(NextFlipBook[0]);
-				break;
-			case EDirectionFacing::DOWN:
-				FlipBookComponent->SetFlipbook(NextFlipBook[1]);
-				break;
-			case EDirectionFacing::RIGHT:
-				FlipBookComponent->SetFlipbook(NextFlipBook[2]);
-				break;
-			case EDirectionFacing::LEFT:
-				FlipBookComponent->SetFlipbook(NextFlipBook[3]);
-				break;
-			}
+		case EDirectionFacing::UP:
+			FlipBookComponent->SetFlipbook(NextFlipBook[0]);
+			break;
+		case EDirectionFacing::DOWN:
+			FlipBookComponent->SetFlipbook(NextFlipBook[1]);
+			break;
+		case EDirectionFacing::RIGHT:
+			FlipBookComponent->SetFlipbook(NextFlipBook[2]);
+			break;
+		case EDirectionFacing::LEFT:
+			FlipBookComponent->SetFlipbook(NextFlipBook[3]);
+			break;
 		}
 	}
 }
-
 
 void AGun::RotateTowardsMouse(const FVector2D& MouseLocation)
 {
@@ -74,13 +73,4 @@ void AGun::RotateTowardsMouse(const FVector2D& MouseLocation)
 void AGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	UpdateAnimation();
-
-	if(bIsEquipped)
-	{
-		FVector2D MouseLocation;
-		GetMousePosition(MouseLocation.X, MouseLocation.Y);
-		RotateTowardsMouse(MouseLocation);
-	}
-	
 }

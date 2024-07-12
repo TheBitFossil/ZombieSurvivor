@@ -30,7 +30,7 @@ public:
 	
 	// Change animations on player state
 	UFUNCTION()
-	void UpdateAnimation() const;
+	void SetAnimation(const bool bIsMoving, const EDirectionFacing& Direction) const;
 
 	virtual void BeginPlay() override;
 

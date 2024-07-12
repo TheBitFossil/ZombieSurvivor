@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Gun.h"
 #include "InputMappingContext.h"
 #include "PaperFlipbookComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -35,6 +34,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UChildActorComponent> GunChildActor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TSubclassOf<class AGun> GunClass;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
 	TObjectPtr<UInputMappingContext> IMC_Default;
@@ -55,7 +57,7 @@ public:
 	bool bCanMove {true};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
-	bool bHasGun {false};
+	bool bHasGunEquipped {false};
 	
 	// UP/ DOWN / RIGHT / LEFT
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)
@@ -69,10 +71,14 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)
 	TArray<TObjectPtr<UPaperFlipbook>> FB_Shoot_Walk;
-	
-	virtual void BeginPlay() override;
 
+	UFUNCTION()
 	void ChangeFlipBookAnimation(bool HasGun);
+
+	UFUNCTION()
+	void UpdateGunAnimation(bool bEquipped);
+
+	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
 

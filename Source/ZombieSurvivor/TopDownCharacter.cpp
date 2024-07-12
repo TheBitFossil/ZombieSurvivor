@@ -5,6 +5,7 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Gun.h"
 
 
 ATopDownCharacter::ATopDownCharacter()
@@ -17,9 +18,13 @@ ATopDownCharacter::ATopDownCharacter()
 	FlipBookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("FlipbBook Comp"));
 	FlipBookComponent->SetupAttachment(RootComponent);
 	FlipBookComponent->SetTranslucentSortPriority(10);
-
-	GunChildActor->CreateDefaultSubobject<UChildActorComponent>(TEXT("Gun"));
-	GunChildActor->SetupAttachment(RootComponent);
+	
+	GunChildActor = CreateDefaultSubobject<UChildActorComponent>(TEXT("Gun"));
+	GunChildActor->SetupAttachment(FlipBookComponent);
+	if(GunClass)
+	{
+		GunChildActor->SetChildActorClass(AGun::StaticClass());
+	}
 }
 
 void ATopDownCharacter::BeginPlay()
@@ -58,17 +63,17 @@ EDirectionFacing ATopDownCharacter::CalculateFacingDirection(const FVector2D& Va
 	return DirectionFacing;
 }
 
-void ATopDownCharacter::ChangeFlipBookAnimation(bool HasGun)
+void ATopDownCharacter::ChangeFlipBookAnimation(bool bEquipped)
 {
 	// Either Running or Idling
 	TArray<UPaperFlipbook*> NextFlipBook;
 	if (Direction.Length() != 0.f)
 	{
-		NextFlipBook = HasGun ? FB_Shoot_Walk : FB_Walk;
+		NextFlipBook = bEquipped ? FB_Shoot_Walk : FB_Walk;
 	}
 	else
 	{
-		NextFlipBook = HasGun ? FB_Shoot_Idle : FB_Idle;
+		NextFlipBook = bEquipped ? FB_Shoot_Idle : FB_Idle;
 	}
 
 	if (!NextFlipBook.IsEmpty() && FlipBookComponent != nullptr)
@@ -87,6 +92,16 @@ void ATopDownCharacter::ChangeFlipBookAnimation(bool HasGun)
 		case EDirectionFacing::LEFT:
 			FlipBookComponent->SetFlipbook(NextFlipBook[3]);
 			break;
+		}
+	}
+}
+void ATopDownCharacter::UpdateGunAnimation(bool bEquipped)
+{
+	if(bEquipped)
+	{
+		if(AGun* Gun = static_cast<AGun*>(GunChildActor->GetChildActor()))
+		{
+			Gun->SetAnimation(GetDirection().Length() != 0.f, GetDirectionFacing());
 		}
 	}
 }
@@ -112,7 +127,8 @@ void ATopDownCharacter::Tick(float DeltaTime)
 			SetActorLocation(NewLocation);
 		}
 
-		ChangeFlipBookAnimation(bHasGun);
+		ChangeFlipBookAnimation(bHasGunEquipped);
+		UpdateGunAnimation(bHasGunEquipped);
 	}
 }
 
@@ -146,8 +162,7 @@ void ATopDownCharacter::MoveTriggered(const FInputActionValue& Value)
 
 void ATopDownCharacter::MoveCompleted(const FInputActionValue& Value)
 {
-	const FVector2d InputAction = Value.Get<FVector2d>();
-
+	//const FVector2d InputAction = Value.Get<FVector2d>();
 	Direction = FVector2D::Zero();
 }
 
@@ -159,11 +174,11 @@ void ATopDownCharacter::Shoot(const FInputActionValue& Value)
 
 void ATopDownCharacter::EquipGun()
 {
-	bHasGun = !bHasGun;
+	bHasGunEquipped = !bHasGunEquipped;
 	if(AGun* Gun = static_cast<AGun*>(GunChildActor->GetChildActor()))
 	{
 		Gun->SetOwner(this);
-		Gun->bIsEquipped = bHasGun;
-	
+		Gun->bIsEquipped = bHasGunEquipped;
+		Gun->SetActorHiddenInGame(!bHasGunEquipped);
 	}
 }

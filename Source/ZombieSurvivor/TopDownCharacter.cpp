@@ -17,6 +17,9 @@ ATopDownCharacter::ATopDownCharacter()
 	FlipBookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("FlipbBook Comp"));
 	FlipBookComponent->SetupAttachment(RootComponent);
 	FlipBookComponent->SetTranslucentSortPriority(10);
+
+	GunChildActor->CreateDefaultSubobject<UChildActorComponent>(TEXT("Gun"));
+	GunChildActor->SetupAttachment(RootComponent);
 }
 
 void ATopDownCharacter::BeginPlay()
@@ -33,7 +36,7 @@ void ATopDownCharacter::BeginPlay()
 	}
 }
 
-EDirectionFacing ATopDownCharacter::GetDirectionFacing(const FVector2D& Value)
+EDirectionFacing ATopDownCharacter::CalculateFacingDirection(const FVector2D& Value)
 {
 	if (Value.X > 0.f)
 	{
@@ -70,7 +73,7 @@ void ATopDownCharacter::ChangeFlipBookAnimation(bool HasGun)
 
 	if (!NextFlipBook.IsEmpty() && FlipBookComponent != nullptr)
 	{
-		switch (GetDirectionFacing(Direction))
+		switch (CalculateFacingDirection(Direction))
 		{
 		case EDirectionFacing::UP:
 			FlipBookComponent->SetFlipbook(NextFlipBook[0]);
@@ -151,11 +154,16 @@ void ATopDownCharacter::MoveCompleted(const FInputActionValue& Value)
 void ATopDownCharacter::Shoot(const FInputActionValue& Value)
 {
 	// Get Facing Direction
-	
 	// Play Animation
 }
 
 void ATopDownCharacter::EquipGun()
 {
 	bHasGun = !bHasGun;
+	if(AGun* Gun = static_cast<AGun*>(GunChildActor->GetChildActor()))
+	{
+		Gun->SetOwner(this);
+		Gun->bIsEquipped = bHasGun;
+	
+	}
 }

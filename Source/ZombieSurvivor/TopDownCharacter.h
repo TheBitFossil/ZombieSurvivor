@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Gun.h"
 #include "InputMappingContext.h"
 #include "PaperFlipbookComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -32,6 +33,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UPaperFlipbookComponent> FlipBookComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UChildActorComponent> GunChildActor;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
 	TObjectPtr<UInputMappingContext> IMC_Default;
 
@@ -67,12 +71,18 @@ public:
 	TArray<TObjectPtr<UPaperFlipbook>> FB_Shoot_Walk;
 	
 	virtual void BeginPlay() override;
-	
+
 	void ChangeFlipBookAnimation(bool HasGun);
 
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION()
+	EDirectionFacing GetDirectionFacing() const { return DirectionFacing; }
+
+	UFUNCTION()
+	FVector2D GetDirection() const { return Direction; }
 
 private:
 	UPROPERTY()
@@ -80,6 +90,9 @@ private:
 
 	UPROPERTY()
 	EDirectionFacing DirectionFacing {};
+
+	UFUNCTION()
+	EDirectionFacing CalculateFacingDirection(const FVector2D& Value);
 	
 	UFUNCTION()
 	void MoveTriggered(const FInputActionValue& Value);
@@ -93,7 +106,5 @@ private:
 	UFUNCTION()
 	void EquipGun();
 	
-	UFUNCTION()
-	EDirectionFacing GetDirectionFacing(const FVector2D& Value);
-
+	
 };

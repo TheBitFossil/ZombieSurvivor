@@ -55,9 +55,6 @@ public:
 	TArray<TObjectPtr<UPaperFlipbook>> FB_Walk;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)
-	TArray<TObjectPtr<UPaperFlipbook>> FB_Run;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)
 	TArray<TObjectPtr<UPaperFlipbook>> FB_Shoot;
 	
 	virtual void BeginPlay() override;

@@ -16,6 +16,7 @@ ATopDownCharacter::ATopDownCharacter()
 
 	FlipBookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("FlipbBook Comp"));
 	FlipBookComponent->SetupAttachment(RootComponent);
+	FlipBookComponent->SetTranslucentSortPriority(10);
 }
 
 void ATopDownCharacter::BeginPlay()
@@ -54,17 +55,17 @@ EDirectionFacing ATopDownCharacter::GetDirectionFacing(const FVector2D& Value)
 	return DirectionFacing;
 }
 
-void ATopDownCharacter::ChangeFlipBookAnimation()
+void ATopDownCharacter::ChangeFlipBookAnimation(bool HasGun)
 {
 	// Either Running or Idling
 	TArray<UPaperFlipbook*> NextFlipBook;
 	if (Direction.Length() != 0.f)
 	{
-		NextFlipBook = FB_Walk;
+		NextFlipBook = HasGun ? FB_Shoot_Walk : FB_Walk;
 	}
 	else
 	{
-		NextFlipBook = FB_Idle;
+		NextFlipBook = HasGun ? FB_Shoot_Idle : FB_Idle;
 	}
 
 	if (!NextFlipBook.IsEmpty() && FlipBookComponent != nullptr)
@@ -108,7 +109,7 @@ void ATopDownCharacter::Tick(float DeltaTime)
 			SetActorLocation(NewLocation);
 		}
 
-		ChangeFlipBookAnimation();
+		ChangeFlipBookAnimation(bHasGun);
 	}
 }
 
@@ -123,6 +124,9 @@ void ATopDownCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		InputComponent->BindAction(IA_Shoot, ETriggerEvent::Started, this, &ATopDownCharacter::Shoot);
 		InputComponent->BindAction(IA_Shoot, ETriggerEvent::Triggered, this, &ATopDownCharacter::Shoot);
+
+		InputComponent->BindAction(IA_EquipGun, ETriggerEvent::Started, this, &ATopDownCharacter::EquipGun);
+		//InputComponent->BindAction(IA_Aim, ETriggerEvent::Completed, this, &ATopDownCharacter::Aim);
 	}
 }
 
@@ -146,5 +150,12 @@ void ATopDownCharacter::MoveCompleted(const FInputActionValue& Value)
 
 void ATopDownCharacter::Shoot(const FInputActionValue& Value)
 {
+	// Get Facing Direction
 	
+	// Play Animation
+}
+
+void ATopDownCharacter::EquipGun()
+{
+	bHasGun = !bHasGun;
 }

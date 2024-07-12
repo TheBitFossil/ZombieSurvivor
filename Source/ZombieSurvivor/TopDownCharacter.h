@@ -40,6 +40,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
 	TObjectPtr<UInputAction> IA_Shoot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
+	TObjectPtr<UInputAction> IA_EquipGun;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Input)
 	float MoveSpeed {200.f};
@@ -47,6 +50,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Input)
 	bool bCanMove {true};
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	bool bHasGun {false};
+	
 	// UP/ DOWN / RIGHT / LEFT
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)
 	TArray<TObjectPtr<UPaperFlipbook>> FB_Idle;
@@ -55,10 +61,14 @@ public:
 	TArray<TObjectPtr<UPaperFlipbook>> FB_Walk;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)
-	TArray<TObjectPtr<UPaperFlipbook>> FB_Shoot;
+	TArray<TObjectPtr<UPaperFlipbook>> FB_Shoot_Idle;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)
+	TArray<TObjectPtr<UPaperFlipbook>> FB_Shoot_Walk;
 	
 	virtual void BeginPlay() override;
-	void ChangeFlipBookAnimation();
+	
+	void ChangeFlipBookAnimation(bool HasGun);
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -80,6 +90,9 @@ private:
 	UFUNCTION()
 	void Shoot(const FInputActionValue& Value);
 
+	UFUNCTION()
+	void EquipGun();
+	
 	UFUNCTION()
 	EDirectionFacing GetDirectionFacing(const FVector2D& Value);
 

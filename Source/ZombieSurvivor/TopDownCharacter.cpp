@@ -43,6 +43,11 @@ void ATopDownCharacter::BeginPlay()
 
 EDirectionFacing ATopDownCharacter::CalculateFacingDirection(const FVector2D& Value)
 {
+	// Setting the scale to flip the Sprite
+	// FVector Scale = FlipBook->GetComponentScale();
+	// if(Scale.X > 0.f)
+	// FlipBook->SetWorldScale3D(FVector(-1.f, 1.f, 1.f));
+	
 	if (Value.X > 0.f)
 	{
 		DirectionFacing = EDirectionFacing::RIGHT;
@@ -106,6 +111,16 @@ void ATopDownCharacter::UpdateGunAnimation(bool bEquipped)
 	}
 }
 
+bool ATopDownCharacter::IsInMapBoundsHorizontal(float XPos)
+{
+	return XPos > HorizontalMapBounds.X && XPos < HorizontalMapBounds.Y;
+}
+
+bool ATopDownCharacter::IsInMapBoundsVertical(float ZPos)
+{
+	return ZPos < VerticalMapBounds.X && ZPos > VerticalMapBounds.Y;
+}
+
 void ATopDownCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -121,12 +136,22 @@ void ATopDownCharacter::Tick(float DeltaTime)
 			}
 
 			FVector2d Velocity = Direction * MoveSpeed * GetWorld()->GetDeltaSeconds();
-			FVector Location = GetActorLocation();
-			FVector NewLocation = Location + FVector(Velocity.X, 0.f, Velocity.Y);
 
+			FVector Location = GetActorLocation();
+			FVector NewLocation = Location + FVector(Velocity.X, 0.f, 0.f);
+			if(!IsInMapBoundsHorizontal(NewLocation.X))
+			{
+				NewLocation -= FVector(Velocity.X, 0.f, 0.f);		// Remove any Horizontal Movement
+			}
+
+			NewLocation += FVector(0.f, 0.f, Velocity.Y);	// Add Vertical Movement
+			if(!IsInMapBoundsVertical(NewLocation.Z))
+			{
+				NewLocation -= FVector(0.f, 0.f, Velocity.Y);
+			}
+			// Finally set the corrected location Value
 			SetActorLocation(NewLocation);
 		}
-
 		ChangeFlipBookAnimation(bHasGunEquipped);
 		UpdateGunAnimation(bHasGunEquipped);
 	}

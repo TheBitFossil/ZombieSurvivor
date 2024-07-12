@@ -49,6 +49,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
 	TObjectPtr<UInputAction> IA_EquipGun;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector2D HorizontalMapBounds { 10.f, 200.f };
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector2D VerticalMapBounds { -50.f, -250.f };
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Input)
 	float MoveSpeed {200.f};
@@ -90,6 +96,12 @@ public:
 	UFUNCTION()
 	FVector2D GetDirection() const { return Direction; }
 
+	UFUNCTION()
+	bool IsInMapBoundsHorizontal(float XPos);
+
+	UFUNCTION()
+	bool IsInMapBoundsVertical(float ZPos);
+	
 private:
 	UPROPERTY()
 	FVector2D Direction {};

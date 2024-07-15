@@ -77,22 +77,35 @@ void AGun::SetAnimation(const bool bIsMoving, const EDirectionFacing& Direction)
 
 void AGun::Shoot(const EDirectionFacing& Facing)
 {
-	int8 idx = static_cast<int8>(Facing);
-
-	FVector SpawnLocation = GunMuzzles[idx]->GetComponentLocation();
-	FRotator SpawnRotation = GunMuzzles[idx]->GetComponentRotation();
-	// Spawn Bullet
-	if(BulletClass)
+	if(bCanShoot)
 	{
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = this;
-		SpawnParams.Instigator = GetInstigator();
+		bCanShoot = false;
+		int8 idx = static_cast<int8>(Facing);
 
-		ABullet* NewBullet = GetWorld()->SpawnActor<ABullet>
-			(BulletClass, SpawnLocation, SpawnRotation, SpawnParams);
-		if(NewBullet)
+		// Where to spawn and how to rotate the bullet
+		FVector SpawnLocation = GunMuzzles[idx]->GetComponentLocation();
+		FRotator SpawnRotation = GunMuzzles[idx]->GetComponentRotation();
+		
+		if(BulletClass)
 		{
-			NewBullet->FlipBookComponent->SetWorldRotation(SpawnRotation);
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			SpawnParams.Instigator = GetInstigator();
+
+			// Use a TSubClass of for a UObject to be spawned
+			ABullet* NewBullet = GetWorld()->SpawnActor<ABullet>
+				(BulletClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+			// Assertion: crashes the game if the bullet is not working
+			// Development Code
+			check(NewBullet);
+			
+			if(NewBullet)
+			{
+				NewBullet->InitStats(SpawnRotation, BulletSpeed);
+			}
+			GetWorldTimerManager().SetTimer(FireRateTimer, this, &AGun::OnFireRateTimerTimeOut,
+				1.f, false, FireRate);
 		}
 	}
 }
@@ -100,4 +113,9 @@ void AGun::Shoot(const EDirectionFacing& Facing)
 void AGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AGun::OnFireRateTimerTimeOut()
+{
+	bCanShoot = true;
 }

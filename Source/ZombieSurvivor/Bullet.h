@@ -27,11 +27,20 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UPaperFlipbookComponent>  FlipBookComponent;
 
-	UPROPERTY(BlueprintReadWrite)
-	FVector2D MoveDirection{};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float LifeTime{2.f};
 
-	UPROPERTY(BlueprintReadWrite)
-	float MoveSpeed{};
+	UPROPERTY()
+	FTimerHandle LifeTimerHandle;
+
+	UPROPERTY(VisibleAnywhere)
+	bool bIsLaunched {false};
+	
+	UFUNCTION()
+	void OnLifeTimerTimeOut();
+
+	UFUNCTION()
+	void InitStats(const FRotator& Rotation,const float& MoveSpeed);
 	
 	virtual void BeginPlay() override;
 

@@ -16,7 +16,10 @@ public class ZombieSurvivor : ModuleRules
 			"InputCore",
 			"EnhancedInput",
 			"Paper2D",
-			"EnhancedInput"
+			"EnhancedInput",
+			"Slate",
+			"SlateCore",
+			"UMG"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

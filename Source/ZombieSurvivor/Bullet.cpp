@@ -18,28 +18,36 @@ ABullet::ABullet()
 
 	FlipBookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("FlipBook"));
 	FlipBookComponent->SetupAttachment(RootComponent);
+}
+
+void ABullet::InitStats(const FRotator& Rotation, const float& MoveSpeed)
+{
+	if(bIsLaunched)
+	{
+		return;
+	}
+	bIsLaunched = true;
+	FlipBookComponent->SetWorldRotation(Rotation);
+	ProjectileMovementComponent->InitialSpeed = MoveSpeed;
 	
-	MoveDirection = FVector2D(1.f, 0.f);
+	GetWorldTimerManager().SetTimer(LifeTimerHandle, this, &ABullet::OnLifeTimerTimeOut,
+		1.f, false, LifeTime);
 }
 
 void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	const FVector2D Velocity = MoveDirection * MoveSpeed * DeltaTime;
-	
-	const FVector Location = GetActorLocation();
-	const FVector NewLocation = Location + FVector(Velocity.X, 0.f, Velocity.Y);
-	
-	SetActorLocation(NewLocation);
+	ProjectileMovementComponent->bAllowConcurrentTick = bIsLaunched;
 }
 
-	
-
+void ABullet::OnLifeTimerTimeOut()
+{
+	Destroy(this);
+}
 

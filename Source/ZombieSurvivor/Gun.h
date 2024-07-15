@@ -30,14 +30,22 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=Weapon)
 	TArray<TObjectPtr<USceneComponent>> GunMuzzles;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapon)
+	UPROPERTY(EditDefaultsOnly, Category=Weapon)
 	TSubclassOf<ABullet> BulletClass;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool bIsEquipped {};
 
-	UFUNCTION()
-	void RotateTowardsMouse(const FVector2D& MouseLocation);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	float BulletSpeed {200.f};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapon)
+	float FireRate {.95f};
+
+	FTimerHandle FireRateTimer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bCanShoot{true};
 	
 	UFUNCTION()
 	void SetAnimation(const bool bIsMoving, const EDirectionFacing& Direction) const;
@@ -49,4 +57,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
+	void OnFireRateTimerTimeOut();
+	
 };

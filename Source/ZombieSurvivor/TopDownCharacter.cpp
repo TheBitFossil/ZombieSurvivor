@@ -220,6 +220,18 @@ void ATopDownCharacter::Shoot(const FInputActionValue& Value)
 void ATopDownCharacter::EquipGun()
 {
 	bHasGunEquipped = !bHasGunEquipped;
+	if(APlayerController* PC = static_cast<APlayerController*>(Controller))
+	{
+		if(bHasGunEquipped)
+		{
+			PC->CurrentMouseCursor = EMouseCursor::Type::Crosshairs;
+		}
+		else
+		{
+			PC->CurrentMouseCursor = EMouseCursor::Type::Default;
+		}
+	}
+	
 	if(AGun* Gun = static_cast<AGun*>(GunChildActor->GetChildActor()))
 	{
 		Gun->SetOwner(this);
@@ -227,6 +239,7 @@ void ATopDownCharacter::EquipGun()
 		Gun->SetActorHiddenInGame(!bHasGunEquipped);
 	}
 }
+
 void ATopDownCharacter::CalculateMousePositionInWorld()
 {
 	if(APlayerController* PC = static_cast<APlayerController*>(Controller))

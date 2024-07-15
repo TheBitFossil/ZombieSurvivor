@@ -7,6 +7,7 @@
 #include "PaperFlipbookComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Pawn.h"
+#include "Framework/Application/SlateApplication.h"
 #include "TopDownCharacter.generated.h"
 
 UENUM()
@@ -40,9 +41,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UPaperFlipbookComponent> MarkerSprite;
+
+	TSharedPtr<FSlateDynamicImageBrush> CustomCursorBrush;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=Weapon)
 	TSubclassOf<class AGun> GunClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Weapon)
+	bool bHasGunEquipped {false};
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
 	TObjectPtr<UInputMappingContext> IMC_Default;
@@ -67,9 +73,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Input)
 	bool bCanMove {true};
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
-	bool bHasGunEquipped {false};
 	
 	// UP/ DOWN / RIGHT / LEFT
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)

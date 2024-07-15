@@ -18,6 +18,8 @@ ABullet::ABullet()
 
 	FlipBookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("FlipBook"));
 	FlipBookComponent->SetupAttachment(RootComponent);
+	
+	MoveDirection = FVector2D(1.f, 0.f);
 }
 
 void ABullet::BeginPlay()
@@ -29,5 +31,15 @@ void ABullet::BeginPlay()
 void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	const FVector2D Velocity = MoveDirection * MoveSpeed * DeltaTime;
+	
+	const FVector Location = GetActorLocation();
+	const FVector NewLocation = Location + FVector(Velocity.X, 0.f, Velocity.Y);
+	
+	SetActorLocation(NewLocation);
 }
+
+	
+
 

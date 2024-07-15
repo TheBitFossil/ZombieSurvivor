@@ -177,7 +177,7 @@ void ATopDownCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		InputComponent->BindAction(IA_Move, ETriggerEvent::Completed, this, &ATopDownCharacter::MoveCompleted);
 
 		InputComponent->BindAction(IA_Shoot, ETriggerEvent::Started, this, &ATopDownCharacter::Shoot);
-		InputComponent->BindAction(IA_Shoot, ETriggerEvent::Triggered, this, &ATopDownCharacter::Shoot);
+		//InputComponent->BindAction(IA_Shoot, ETriggerEvent::Triggered, this, &ATopDownCharacter::Shoot);
 
 		InputComponent->BindAction(IA_EquipGun, ETriggerEvent::Started, this, &ATopDownCharacter::EquipGun);
 		//InputComponent->BindAction(IA_Aim, ETriggerEvent::Completed, this, &ATopDownCharacter::Aim);
@@ -203,6 +203,10 @@ void ATopDownCharacter::MoveCompleted(const FInputActionValue& Value)
 
 void ATopDownCharacter::Shoot(const FInputActionValue& Value)
 {
+	if(!bHasGunEquipped)
+	{
+		return;
+	}
 	// Get Gun and call its shoot
 	if(AGun* Gun = static_cast<AGun*>(GunChildActor->GetChildActor()))
 	{

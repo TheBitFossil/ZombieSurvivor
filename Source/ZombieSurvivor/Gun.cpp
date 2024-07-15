@@ -40,8 +40,6 @@ void AGun::BeginPlay()
 
 void AGun::SetAnimation(const bool bIsMoving, const EDirectionFacing& Direction) const
 {
-	
-	// Either Running or Idling
 	TArray<UPaperFlipbook*> NextFlipBook;
 	if(!bIsEquipped)
 	{
@@ -94,20 +92,9 @@ void AGun::Shoot(const EDirectionFacing& Facing)
 			(BulletClass, SpawnLocation, SpawnRotation, SpawnParams);
 		if(NewBullet)
 		{
-			
+			NewBullet->FlipBookComponent->SetWorldRotation(SpawnRotation);
 		}
 	}
-}
-
-void AGun::RotateTowardsMouse(const FVector2D& MouseLocation)
-{
-	FVector PlayerLocation = Owner->GetActorLocation();
-	FVector2D PlayerLocation2D(PlayerLocation.X, PlayerLocation.Y);
-
-	FVector2D Direction = MouseLocation - PlayerLocation2D;
-	float Angle = FMath::Atan2(Direction.Y, Direction.X) * (180.f / PI);
-
-	SetActorRotation(FRotator(0.0f, Angle, 0.0f));
 }
 
 void AGun::Tick(float DeltaTime)

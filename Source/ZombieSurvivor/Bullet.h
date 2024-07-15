@@ -26,6 +26,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UPaperFlipbookComponent>  FlipBookComponent;
+
+	UPROPERTY(BlueprintReadWrite)
+	FVector2D MoveDirection{};
+
+	UPROPERTY(BlueprintReadWrite)
+	float MoveSpeed{};
 	
 	virtual void BeginPlay() override;
 

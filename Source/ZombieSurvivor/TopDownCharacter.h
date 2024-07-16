@@ -88,29 +88,11 @@ public:
 	TArray<TObjectPtr<UPaperFlipbook>> FB_Shoot_Walk;
 
 	UFUNCTION()
-	void ChangeFlipBookAnimation(bool HasGun);
-
-	UFUNCTION()
-	void UpdateGunAnimation(bool bEquipped);
-
-	virtual void BeginPlay() override;
-
-	virtual void Tick(float DeltaTime) override;
-
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UFUNCTION()
 	EDirectionFacing GetDirectionFacing() const { return DirectionFacing; }
 
 	UFUNCTION()
 	FVector2D GetDirection() const { return Direction; }
 
-	UFUNCTION()
-	bool IsInMapBoundsHorizontal(float XPos);
-
-	UFUNCTION()
-	bool IsInMapBoundsVertical(float ZPos);
-	
 private:
 	UPROPERTY()
 	FVector2D Direction {};
@@ -136,5 +118,23 @@ private:
 	UFUNCTION()
 	void CalculateMousePositionInWorld();
 	
+	UFUNCTION()
+	void ChangeFlipBookAnimation(bool HasGun);
+
+	UFUNCTION()
+	void UpdateGunAnimation(bool bEquipped);
+
+	UFUNCTION()
+	bool IsInMapBoundsHorizontal(float XPos);
+
+	UFUNCTION()
+	bool IsInMapBoundsVertical(float ZPos);
+	
+protected:
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 };

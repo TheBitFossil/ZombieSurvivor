@@ -213,7 +213,6 @@ void ATopDownCharacter::Shoot(const FInputActionValue& Value)
 		Gun->Shoot(GetDirectionFacing());
 	}
 	// Subtract Bullets ?
-	// Cooldown ?
 	// Play Animation/VFX ?
 }
 

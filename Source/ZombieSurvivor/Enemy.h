@@ -72,7 +72,7 @@ private:
 	float DistanceToTarget{};
 
 	UPROPERTY(VisibleAnywhere)
-	FVector MoveDirection{};
+	FVector NormalizedDirectionToPlayer{};
 	
 	UPROPERTY(VisibleAnywhere)
 	EDirectionFacing DirectionFacing{};
@@ -87,7 +87,7 @@ private:
 	EDirectionFacing CalculateFacingDirection();
 	
 	UFUNCTION()
-	void ChasePlayer(float DeltaTime);
+	void ChasePlayer(const float& Delta);
 	
 	UFUNCTION()
 	void UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Facing);

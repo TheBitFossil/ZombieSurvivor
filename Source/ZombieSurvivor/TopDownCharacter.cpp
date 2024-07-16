@@ -76,7 +76,7 @@ EDirectionFacing ATopDownCharacter::CalculateFacingDirection(const FVector2D& Va
 	return DirectionFacing;
 }
 
-void ATopDownCharacter::ChangeFlipBookAnimation(bool bEquipped)
+void ATopDownCharacter::ChangeFlipBookAnimation(const bool bEquipped)
 {
 	// Either Running or Idling
 	TArray<UPaperFlipbook*> NextFlipBook;
@@ -130,6 +130,99 @@ bool ATopDownCharacter::IsInMapBoundsVertical(float ZPos)
 	return ZPos < VerticalMapBounds.X && ZPos > VerticalMapBounds.Y;
 }
 
+void ATopDownCharacter::CalculateNextLocation(FVector& NewLocation)
+{
+	FVector2d Velocity = Direction * MoveSpeed * GetWorld()->GetDeltaSeconds();
+
+	FVector Location = GetActorLocation();
+	NewLocation = Location + FVector(Velocity.X, 0.f, 0.f);
+	if(!IsInMapBoundsHorizontal(NewLocation.X))
+	{
+		NewLocation -= FVector(Velocity.X, 0.f, 0.f);		// Remove any Horizontal Movement
+	}
+
+	NewLocation += FVector(0.f, 0.f, Velocity.Y);	// Add Vertical Movement
+	if(!IsInMapBoundsVertical(NewLocation.Z))
+	{
+		NewLocation -= FVector(0.f, 0.f, Velocity.Y);
+	}
+}
+void ATopDownCharacter::SetTraceDirection(FVector& StartLocation, FVector& EndPoint)
+{
+	// All Targets in Facing Direction
+	FVector TraceDirection {};
+	switch (DirectionFacing)
+	{
+	case EDirectionFacing::UP:
+		TraceDirection = GetActorUpVector();
+		break;
+	case EDirectionFacing::DOWN:
+		TraceDirection = GetActorUpVector() * -1.f;
+		break;
+	case EDirectionFacing::RIGHT:
+		TraceDirection = GetActorForwardVector();
+		break;
+	case EDirectionFacing::LEFT:
+		TraceDirection = GetActorForwardVector() * -1.f;
+		break;
+	}
+
+	StartLocation = GetActorLocation();
+	EndPoint = StartLocation + TraceDirection * 100.f;
+	DrawDebugLine(GetWorld(), StartLocation, EndPoint, FColor::Magenta, false, .12f);
+}
+void ATopDownCharacter::TraceForClosestTargetInDirection(FVector StartLocation, FVector EndPoint)
+{
+	// Trace for Targets in Facing direction
+	TArray<FHitResult> HitResults;
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.AddIgnoredActor(this);
+		
+	FCollisionShape SphereShape = FCollisionShape::MakeSphere(CollisionShapeRadius);
+		
+	bool bHit = GetWorld()->SweepMultiByChannel(
+		HitResults,
+		StartLocation,
+		EndPoint,
+		FQuat::Identity,
+		ECC_WorldDynamic,
+		SphereShape,
+		CollisionQueryParams
+	);
+		
+	// Get Closest Target
+	if(bHit)
+	{
+		const AActor* ClosestTarget = nullptr;
+		float MinDistance = FLT_MAX;
+
+		for(const FHitResult& Hit : HitResults)
+		{
+			const AActor* HitActor = Hit.GetActor();
+			if(HitActor)
+			{
+				const float Distance = FVector::Dist(StartLocation, Hit.ImpactPoint);
+				if(Distance < MinDistance)
+				{
+					MinDistance = Distance;
+					ClosestTarget = HitActor;
+				}
+				DrawDebugSphere(GetWorld(), Hit.ImpactPoint, SphereShape.GetSphereRadius(), 12, FColor::Red, false, 1.f);
+			}
+		}
+
+		if(ClosestTarget)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green,
+			                                 FString::Printf(TEXT("Closest Target: %s"), *ClosestTarget->GetName()));
+		}
+	}
+	else
+	{
+		DrawDebugSphere(GetWorld(), EndPoint, SphereShape.GetSphereRadius(), 4, FColor::White, false, .3f);
+	}
+}
+
 void ATopDownCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -145,25 +238,19 @@ void ATopDownCharacter::Tick(float DeltaTime)
 				Direction.Normalize();
 			}
 
-			FVector2d Velocity = Direction * MoveSpeed * GetWorld()->GetDeltaSeconds();
-
-			FVector Location = GetActorLocation();
-			FVector NewLocation = Location + FVector(Velocity.X, 0.f, 0.f);
-			if(!IsInMapBoundsHorizontal(NewLocation.X))
-			{
-				NewLocation -= FVector(Velocity.X, 0.f, 0.f);		// Remove any Horizontal Movement
-			}
-
-			NewLocation += FVector(0.f, 0.f, Velocity.Y);	// Add Vertical Movement
-			if(!IsInMapBoundsVertical(NewLocation.Z))
-			{
-				NewLocation -= FVector(0.f, 0.f, Velocity.Y);
-			}
-			// Finally set the corrected location Value
+			FVector NewLocation;
+			CalculateNextLocation(NewLocation);
 			SetActorLocation(NewLocation);
 		}
+		
 		ChangeFlipBookAnimation(bHasGunEquipped);
 		UpdateGunAnimation(bHasGunEquipped);
+
+		FVector StartLocation;
+		FVector EndPoint;
+		SetTraceDirection(StartLocation, EndPoint);
+
+		TraceForClosestTargetInDirection(StartLocation, EndPoint);
 	}
 }
 
@@ -175,12 +262,8 @@ void ATopDownCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	{
 		InputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ATopDownCharacter::MoveTriggered);
 		InputComponent->BindAction(IA_Move, ETriggerEvent::Completed, this, &ATopDownCharacter::MoveCompleted);
-
 		InputComponent->BindAction(IA_Shoot, ETriggerEvent::Started, this, &ATopDownCharacter::Shoot);
-		//InputComponent->BindAction(IA_Shoot, ETriggerEvent::Triggered, this, &ATopDownCharacter::Shoot);
-
 		InputComponent->BindAction(IA_EquipGun, ETriggerEvent::Started, this, &ATopDownCharacter::EquipGun);
-		//InputComponent->BindAction(IA_Aim, ETriggerEvent::Completed, this, &ATopDownCharacter::Aim);
 	}
 }
 
@@ -190,7 +273,7 @@ void ATopDownCharacter::MoveTriggered(const FInputActionValue& Value)
 
 	if (bCanMove)
 	{
-		// Check direction we are moving in
+		// Base for all calculations
 		Direction = InputAction;
 	}
 }
@@ -207,7 +290,7 @@ void ATopDownCharacter::Shoot(const FInputActionValue& Value)
 	{
 		return;
 	}
-	// Get Gun and call its shoot
+	
 	if(AGun* Gun = static_cast<AGun*>(GunChildActor->GetChildActor()))
 	{
 		Gun->Shoot(GetDirectionFacing());

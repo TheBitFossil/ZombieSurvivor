@@ -33,18 +33,21 @@ void AEnemy::BeginPlay()
 
 EDirectionFacing AEnemy::CalculateFacingDirection()
 {
-	FVector ForwardVector = GetActorForwardVector();
-	FVector UpVector = GetActorUpVector();
+	if(!PlayerTarget)
+	{
+		return DirectionFacing;
+	}
 	
-	GEngine->AddOnScreenDebugMessage(-1, .2f, FColor::Green, *ForwardVector.ToString());
+	const FVector EnemyLocation = GetActorLocation();
+	const FVector PlayerLocation = PlayerTarget->GetActorLocation();
+	NormalizedDirectionToPlayer = (PlayerLocation - EnemyLocation).GetSafeNormal();
 	
-	float DotForward = FVector::DotProduct(ForwardVector, MoveDirection);
-	GEngine->AddOnScreenDebugMessage(-1, .2f, FColor::Green, FString::Printf(TEXT("DotF: %f"), DotForward));
-
-	float DotUp = FVector::DotProduct(UpVector, MoveDirection);
-	GEngine->AddOnScreenDebugMessage(-1, .2f, FColor::Green, FString::Printf(TEXT("DotU: %f"), DotUp));
+	const FVector ForwardVector = GetActorForwardVector();
+	const FVector UpVector = GetActorUpVector();
 
 	// Check if the direction to the player is mostly forward/backward or right/left
+	const float DotForward = FVector::DotProduct(ForwardVector, NormalizedDirectionToPlayer);
+	const float DotUp = FVector::DotProduct(UpVector, NormalizedDirectionToPlayer);
 	if (FMath::Abs(DotForward) > FMath::Abs(DotUp))
 	{
 		if(DotForward > 0.f)
@@ -71,12 +74,11 @@ EDirectionFacing AEnemy::CalculateFacingDirection()
 	return DirectionFacing;
 }
 
-void AEnemy::ChasePlayer(float DeltaTime)
+void AEnemy::ChasePlayer(const float& Delta)
 {
 	if(bIsAlive && PlayerTarget)
 	{
-		FVector NormalizedDirection = MoveDirection.GetSafeNormal();
-		FVector Velocity = GetActorLocation() + NormalizedDirection * MoveSpeed * DeltaTime;
+		const FVector Velocity = GetActorLocation() + NormalizedDirectionToPlayer * MoveSpeed * GetWorld()->GetDeltaSeconds();
 		SetActorLocation(Velocity);
 	}
 }
@@ -84,22 +86,17 @@ void AEnemy::ChasePlayer(float DeltaTime)
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	CalculateFacingDirection();
 	
-	if(!bIsAlive)
+	
+	if(PlayerTarget && bIsAlive)
 	{
-		CurrentState = EState::DEAD;
-	}
-	else if(!PlayerTarget)
-	{
-		CurrentState = EState::IDLE;
-	}
-	else
-	{
-		// Active Enemy
-		MoveDirection =  PlayerTarget->GetActorLocation() - GetActorLocation();
-		DistanceToTarget = MoveDirection.Size();
-		
+		const FVector Location = GetActorLocation();
+		const FVector PlayerLocation = PlayerTarget->GetActorLocation();
+
+		CalculateFacingDirection();
+
+		// Move towards Player
+		DistanceToTarget = FVector::Dist(Location, PlayerLocation);
 		if(DistanceToTarget >= StoppingDistance)
 		{
 			CurrentState = EState::CHASING;
@@ -109,6 +106,14 @@ void AEnemy::Tick(float DeltaTime)
 		{
 			CurrentState = EState::ATTACKING;
 		}
+	}
+	else if(!bIsAlive)
+	{
+		CurrentState = EState::DEAD;
+	}
+	else if(!PlayerTarget)
+	{
+		CurrentState = EState::IDLE;
 	}
 
 	UpdateFlipBookAnim(CurrentState, DirectionFacing);

@@ -73,6 +73,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Input)
 	bool bCanMove {true};
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Gameplay);
+	float CollisionShapeRadius{50.f};
 	
 	// UP/ DOWN / RIGHT / LEFT
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)
@@ -92,12 +95,12 @@ public:
 
 	UFUNCTION()
 	FVector2D GetDirection() const { return Direction; }
-
+	
 private:
-	UPROPERTY()
+	UPROPERTY(VisibleInstanceOnly)
 	FVector2D Direction {};
-
-	UPROPERTY()
+	
+	UPROPERTY(VisibleAnywhere)
 	EDirectionFacing DirectionFacing {};
 
 	UFUNCTION()
@@ -119,7 +122,7 @@ private:
 	void CalculateMousePositionInWorld();
 	
 	UFUNCTION()
-	void ChangeFlipBookAnimation(bool HasGun);
+	void ChangeFlipBookAnimation(bool bEquipped);
 
 	UFUNCTION()
 	void UpdateGunAnimation(bool bEquipped);
@@ -129,7 +132,10 @@ private:
 
 	UFUNCTION()
 	bool IsInMapBoundsVertical(float ZPos);
-	
+	void CalculateNextLocation(FVector& NewLocation);
+	void SetTraceDirection(FVector& StartLocation, FVector& EndPoint);
+	void TraceForClosestTargetInDirection(FVector StartLocation, FVector EndPoint);
+
 protected:
 	virtual void BeginPlay() override;
 

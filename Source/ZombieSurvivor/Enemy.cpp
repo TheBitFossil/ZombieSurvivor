@@ -38,10 +38,10 @@ EDirectionFacing AEnemy::CalculateFacingDirection()
 	
 	GEngine->AddOnScreenDebugMessage(-1, .2f, FColor::Green, *ForwardVector.ToString());
 	
-	float DotForward = FVector::DotProduct(ForwardVector, Direction);
+	float DotForward = FVector::DotProduct(ForwardVector, MoveDirection);
 	GEngine->AddOnScreenDebugMessage(-1, .2f, FColor::Green, FString::Printf(TEXT("DotF: %f"), DotForward));
 
-	float DotUp = FVector::DotProduct(UpVector, Direction);
+	float DotUp = FVector::DotProduct(UpVector, MoveDirection);
 	GEngine->AddOnScreenDebugMessage(-1, .2f, FColor::Green, FString::Printf(TEXT("DotU: %f"), DotUp));
 
 	// Check if the direction to the player is mostly forward/backward or right/left
@@ -75,7 +75,7 @@ void AEnemy::ChasePlayer(float DeltaTime)
 {
 	if(bIsAlive && PlayerTarget)
 	{
-		FVector NormalizedDirection = Direction.GetSafeNormal();
+		FVector NormalizedDirection = MoveDirection.GetSafeNormal();
 		FVector Velocity = GetActorLocation() + NormalizedDirection * MoveSpeed * DeltaTime;
 		SetActorLocation(Velocity);
 	}
@@ -97,8 +97,8 @@ void AEnemy::Tick(float DeltaTime)
 	else
 	{
 		// Active Enemy
-		Direction =  PlayerTarget->GetActorLocation() - GetActorLocation();
-		DistanceToTarget = Direction.Size();
+		MoveDirection =  PlayerTarget->GetActorLocation() - GetActorLocation();
+		DistanceToTarget = MoveDirection.Size();
 		
 		if(DistanceToTarget >= StoppingDistance)
 		{
@@ -112,6 +112,30 @@ void AEnemy::Tick(float DeltaTime)
 	}
 
 	UpdateFlipBookAnim(CurrentState, DirectionFacing);
+}
+
+float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	if(!bIsAlive)
+	{
+		return 0;
+	}
+	
+	if(Health - DamageAmount > 0)
+	{
+		Health -= DamageAmount;
+	}
+	else
+	{
+		bIsAlive = false;
+		// Change Draw Order
+		const int32 Sort = FlipBookComponent->TranslucencySortPriority;
+		FlipBookComponent->SetTranslucentSortPriority(Sort - 1);
+		GetWorldTimerManager().SetTimer(DespawnTimerHandle, this, &AEnemy::OnDespawnTimerTimeout, 1.f, false, DespawnTime);
+	}
+	
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
 void AEnemy::UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Facing)
@@ -155,6 +179,11 @@ void AEnemy::UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Fac
 	}
 	
 	FlipBookComponent->SetFlipbook(NextFlipBook);
+}
+
+void AEnemy::OnDespawnTimerTimeout()
+{
+	Destroy(this);
 }
 
 

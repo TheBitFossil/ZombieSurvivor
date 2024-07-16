@@ -51,29 +51,38 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool bIsAlive{true};
-		
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Health{50.f};
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float MoveSpeed{5.f};
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float StoppingDistance{20.f};
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DespawnTime{10.f};
+
+public:
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	
+private:
 	UPROPERTY(VisibleAnywhere)
 	float DistanceToTarget{};
 
 	UPROPERTY(VisibleAnywhere)
-	FVector Direction{};
+	FVector MoveDirection{};
 	
 	UPROPERTY(VisibleAnywhere)
-	EDirectionFacing DirectionFacing {};
+	EDirectionFacing DirectionFacing{};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere)
 	EState CurrentState;
-	
-	virtual void BeginPlay() override;
-	
-	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY()
+	FTimerHandle DespawnTimerHandle;
+	
 	UFUNCTION()
 	EDirectionFacing CalculateFacingDirection();
 	
@@ -82,4 +91,13 @@ public:
 	
 	UFUNCTION()
 	void UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Facing);
+
+	UFUNCTION()
+	void OnDespawnTimerTimeout();
+
+protected:
+	virtual void BeginPlay() override;
+	
+	virtual void Tick(float DeltaTime) override;
+	
 };

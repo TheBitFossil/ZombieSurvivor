@@ -35,6 +35,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	bool bIsLaunched {false};
+
+	UPROPERTY(VisibleAnywhere)
+	bool bIsDisabled {false};
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BulletDamage{10.f};
 	
 	UFUNCTION()
 	void OnLifeTimerTimeOut();
@@ -45,4 +51,11 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION()
+	void DisableBullet();
+	
+	UFUNCTION()
+	void OverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

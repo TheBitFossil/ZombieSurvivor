@@ -31,35 +31,8 @@ void AEnemy::BeginPlay()
 	}
 }
 
-void AEnemy::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	CalculateFacingDirection();
-	
-	if(bIsAlive && PlayerTarget)
-	{
-		FVector Location = GetActorLocation();
-		FVector PlayerLocation =  PlayerTarget->GetActorLocation();
-		Direction =  PlayerLocation - Location;
-		//DrawDebugLine(GetWorld(), Location,PlayerLocation, FColor::Blue, false, .2f);
-		
-		DistanceToTarget = Direction.Size();
-		if(DistanceToTarget >= StoppingDistance)
-		{
-			FVector NormalizedDirection = Direction.GetSafeNormal();
-			FVector Velocity = Location + NormalizedDirection * MoveSpeed * DeltaTime;
-			SetActorLocation(Velocity);
-		}
-	}
-}
-
 EDirectionFacing AEnemy::CalculateFacingDirection()
 {
-	// Setting the scale to flip the Sprite
-	// FVector Scale = FlipBook->GetComponentScale();
-	// if(Scale.X > 0.f)
-	// FlipBook->SetWorldScale3D(FVector(-1.f, 1.f, 1.f));
-
 	FVector ForwardVector = GetActorForwardVector();
 	FVector UpVector = GetActorUpVector();
 	
@@ -97,4 +70,93 @@ EDirectionFacing AEnemy::CalculateFacingDirection()
 
 	return DirectionFacing;
 }
+
+void AEnemy::ChasePlayer(float DeltaTime)
+{
+	if(bIsAlive && PlayerTarget)
+	{
+		FVector Location = GetActorLocation();
+		FVector PlayerLocation =  PlayerTarget->GetActorLocation();
+		Direction =  PlayerLocation - Location;
+		//DrawDebugLine(GetWorld(), Location,PlayerLocation, FColor::Blue, false, .2f);
+		
+		DistanceToTarget = Direction.Size();
+		
+		FVector NormalizedDirection = Direction.GetSafeNormal();
+		FVector Velocity = Location + NormalizedDirection * MoveSpeed * DeltaTime;
+		SetActorLocation(Velocity);
+	}
+}
+
+void AEnemy::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	CalculateFacingDirection();
+
+	if(!bIsAlive)
+	{
+		CurrentState = EState::DEAD;
+	}
+	else if(!PlayerTarget)
+	{
+		CurrentState = EState::IDLE;
+	}
+	else
+	{
+		if(DistanceToTarget >= StoppingDistance)
+		{
+			CurrentState = EState::CHASING;
+			ChasePlayer(DeltaTime);
+		}
+		else
+		{
+			CurrentState = EState::ATTACKING;
+		}
+	}
+
+	UpdateFlipBookAnim(CurrentState, DirectionFacing);
+}
+
+void AEnemy::UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Facing)
+{
+	TArray<TObjectPtr<UPaperFlipbook>> NextFlipBookArray;
+	UPaperFlipbook* NextFlipBook  = nullptr;
+
+	// Sync Array with current State
+	switch (State)
+	{
+	case EState::IDLE:
+		NextFlipBookArray = FB_Idle;
+		break;
+	case EState::CHASING:
+		NextFlipBookArray = FB_Walk;
+		break;
+	case EState::ATTACKING:
+		NextFlipBookArray = FB_Attack;
+		break;
+	case EState::DEAD:
+		NextFlipBookArray = FB_Death;
+		break;
+	}
+
+	// Choose correct facing from our Array
+	switch (Facing)
+	{
+	case EDirectionFacing::UP:
+		NextFlipBook = NextFlipBookArray[0];
+		break;
+	case EDirectionFacing::DOWN:
+		NextFlipBook = NextFlipBookArray[1];
+		break;
+	case EDirectionFacing::RIGHT:
+		NextFlipBook = NextFlipBookArray[2];
+		break;
+	case EDirectionFacing::LEFT:
+		NextFlipBook = NextFlipBookArray[3];
+		break;
+	}
+
+	FlipBookComponent->SetFlipbook(NextFlipBook);
+}
+
 

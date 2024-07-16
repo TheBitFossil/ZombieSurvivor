@@ -9,6 +9,15 @@
 #include "GameFramework/Actor.h"
 #include "Enemy.generated.h"
 
+UENUM()
+enum class EState : uint8
+{
+	IDLE,
+	CHASING,
+	ATTACKING,
+	DEAD
+};
+
 
 UCLASS()
 class ZOMBIESURVIVOR_API AEnemy : public AActor
@@ -32,11 +41,11 @@ public:
 	TArray<TObjectPtr<UPaperFlipbook>> FB_Walk;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)
-	TArray<TObjectPtr<UPaperFlipbook>> FB_Death;
+	TArray<TObjectPtr<UPaperFlipbook>> FB_Attack;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)
-	TArray<TObjectPtr<UPaperFlipbook>> FB_Attack;
-
+	TArray<TObjectPtr<UPaperFlipbook>> FB_Death;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<ATopDownCharacter> PlayerTarget;
 
@@ -57,11 +66,20 @@ public:
 	
 	UPROPERTY(VisibleAnywhere)
 	EDirectionFacing DirectionFacing {};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EState CurrentState;
 	
 	virtual void BeginPlay() override;
+	
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
 	EDirectionFacing CalculateFacingDirection();
 	
+	UFUNCTION()
+	void ChasePlayer(float DeltaTime);
+	
+	UFUNCTION()
+	void UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Facing);
 };

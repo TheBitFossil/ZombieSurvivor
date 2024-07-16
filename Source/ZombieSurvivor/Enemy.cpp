@@ -163,6 +163,7 @@ void AEnemy::UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Fac
 		break;
 	case EState::DEAD:
 		NextFlipBookArray = &FB_Death;
+		FlipBookComponent->SetLooping(false);
 		break;
 	}
 

@@ -75,15 +75,8 @@ void AEnemy::ChasePlayer(float DeltaTime)
 {
 	if(bIsAlive && PlayerTarget)
 	{
-		FVector Location = GetActorLocation();
-		FVector PlayerLocation =  PlayerTarget->GetActorLocation();
-		Direction =  PlayerLocation - Location;
-		//DrawDebugLine(GetWorld(), Location,PlayerLocation, FColor::Blue, false, .2f);
-		
-		DistanceToTarget = Direction.Size();
-		
 		FVector NormalizedDirection = Direction.GetSafeNormal();
-		FVector Velocity = Location + NormalizedDirection * MoveSpeed * DeltaTime;
+		FVector Velocity = GetActorLocation() + NormalizedDirection * MoveSpeed * DeltaTime;
 		SetActorLocation(Velocity);
 	}
 }
@@ -92,7 +85,7 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	CalculateFacingDirection();
-
+	
 	if(!bIsAlive)
 	{
 		CurrentState = EState::DEAD;
@@ -103,6 +96,10 @@ void AEnemy::Tick(float DeltaTime)
 	}
 	else
 	{
+		// Active Enemy
+		Direction =  PlayerTarget->GetActorLocation() - GetActorLocation();
+		DistanceToTarget = Direction.Size();
+		
 		if(DistanceToTarget >= StoppingDistance)
 		{
 			CurrentState = EState::CHASING;
@@ -119,43 +116,44 @@ void AEnemy::Tick(float DeltaTime)
 
 void AEnemy::UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Facing)
 {
-	TArray<TObjectPtr<UPaperFlipbook>> NextFlipBookArray;
+	if(!FlipBookComponent)
+	{
+		return;
+	}
+	
+	// Animation to play
 	UPaperFlipbook* NextFlipBook  = nullptr;
 
-	// Sync Array with current State
+	// Sync Array refs with current State
+	const TArray<TObjectPtr<UPaperFlipbook>>* NextFlipBookArray = nullptr;
 	switch (State)
 	{
 	case EState::IDLE:
-		NextFlipBookArray = FB_Idle;
+		NextFlipBookArray = &FB_Idle;
 		break;
 	case EState::CHASING:
-		NextFlipBookArray = FB_Walk;
+		NextFlipBookArray = &FB_Walk;
 		break;
 	case EState::ATTACKING:
-		NextFlipBookArray = FB_Attack;
+		NextFlipBookArray = &FB_Attack;
 		break;
 	case EState::DEAD:
-		NextFlipBookArray = FB_Death;
+		NextFlipBookArray = &FB_Death;
 		break;
 	}
 
 	// Choose correct facing from our Array
-	switch (Facing)
+	if(NextFlipBookArray)
 	{
-	case EDirectionFacing::UP:
-		NextFlipBook = NextFlipBookArray[0];
-		break;
-	case EDirectionFacing::DOWN:
-		NextFlipBook = NextFlipBookArray[1];
-		break;
-	case EDirectionFacing::RIGHT:
-		NextFlipBook = NextFlipBookArray[2];
-		break;
-	case EDirectionFacing::LEFT:
-		NextFlipBook = NextFlipBookArray[3];
-		break;
+		uint8 idx = static_cast<uint8>(Facing);
+		// Make sure that we do not leave the possible arrays
+		if(idx < NextFlipBookArray->Num())
+		{
+			// Dereference our pointer and use the idx (facing)
+			NextFlipBook = (*NextFlipBookArray)[idx];
+		}
 	}
-
+	
 	FlipBookComponent->SetFlipbook(NextFlipBook);
 }
 

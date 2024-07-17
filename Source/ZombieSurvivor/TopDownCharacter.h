@@ -79,8 +79,11 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Gameplay);
 	float CollisionShapeRadius{50.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Gameplay);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay);
 	float TraceDistance{30.f};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	float TraceOffset{20.f};
 	
 	// UP/ DOWN / RIGHT / LEFT
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)

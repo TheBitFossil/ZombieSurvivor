@@ -7,6 +7,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Gun.h"
+#include "KismetTraceUtils.h"
 #include "Kismet/KismetMathLibrary.h"
 
 
@@ -170,9 +171,9 @@ void ATopDownCharacter::SetTraceDirection()
 
 void ATopDownCharacter::TraceForClosestTargetInDirection()
 {
-	const FVector StartLocation = GetActorLocation();
+	const FVector StartLocation = GetActorLocation() + (TraceDirection * TraceOffset);
 	const FVector EndPoint = StartLocation + (TraceDirection * TraceDistance);
-	DrawDebugLine(GetWorld(), StartLocation, EndPoint, FColor::White, false, .2f);
+	DrawDebugLine(GetWorld(), StartLocation, EndPoint, FColor::Yellow, false, .2f);
 	
 	// Trace for Targets in Facing direction
 	FCollisionQueryParams CollisionQueryParams;
@@ -189,6 +190,7 @@ void ATopDownCharacter::TraceForClosestTargetInDirection()
 		SphereShape,
 		CollisionQueryParams
 	);
+	DrawDebugSweptSphere(GetWorld(), StartLocation, EndPoint, SphereShape.GetSphereRadius(), FColor::Yellow, false, .2f);
 
 	// Get Closest Target
 	if(Results)
@@ -352,6 +354,7 @@ void ATopDownCharacter::EquipGun()
 
 void ATopDownCharacter::CalculateMousePositionInWorld()
 {
+	// Deprecated only here for future ref
 	if(APlayerController* PC = static_cast<APlayerController*>(Controller))
 	{
 		FVector WorldLocation, WorldDirection;

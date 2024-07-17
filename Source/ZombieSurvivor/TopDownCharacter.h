@@ -76,6 +76,9 @@ public:
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Gameplay);
 	float CollisionShapeRadius{50.f};
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Gameplay);
+	float TraceDistance{30.f};
 	
 	// UP/ DOWN / RIGHT / LEFT
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)
@@ -103,6 +106,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	EDirectionFacing DirectionFacing {};
 
+	UPROPERTY(EditAnywhere)
+	TArray<FHitResult> HitResults;
+	
 	UFUNCTION()
 	EDirectionFacing CalculateFacingDirection(const FVector2D& Value);
 	
@@ -132,9 +138,21 @@ private:
 
 	UFUNCTION()
 	bool IsInMapBoundsVertical(float ZPos);
+
+	UFUNCTION()
 	void CalculateNextLocation(FVector& NewLocation);
-	void SetTraceDirection(FVector& StartLocation, FVector& EndPoint);
-	void TraceForClosestTargetInDirection(FVector StartLocation, FVector EndPoint);
+
+	UPROPERTY()
+	FVector TraceDirection {};
+
+	UFUNCTION()
+	void SetTraceDirection();
+
+	UFUNCTION()
+	FVector GetTraceDirection() const {return TraceDirection;}
+	
+	UFUNCTION()
+	void TraceForClosestTargetInDirection();
 
 protected:
 	virtual void BeginPlay() override;

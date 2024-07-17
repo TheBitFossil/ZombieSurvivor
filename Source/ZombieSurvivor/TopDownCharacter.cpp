@@ -3,6 +3,7 @@
 
 #include "TopDownCharacter.h"
 
+#include "Enemy.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Gun.h"
@@ -147,10 +148,9 @@ void ATopDownCharacter::CalculateNextLocation(FVector& NewLocation)
 		NewLocation -= FVector(0.f, 0.f, Velocity.Y);
 	}
 }
-void ATopDownCharacter::SetTraceDirection(FVector& StartLocation, FVector& EndPoint)
+
+void ATopDownCharacter::SetTraceDirection()
 {
-	// All Targets in Facing Direction
-	FVector TraceDirection {};
 	switch (DirectionFacing)
 	{
 	case EDirectionFacing::UP:
@@ -166,60 +166,57 @@ void ATopDownCharacter::SetTraceDirection(FVector& StartLocation, FVector& EndPo
 		TraceDirection = GetActorForwardVector() * -1.f;
 		break;
 	}
-
-	StartLocation = GetActorLocation();
-	EndPoint = StartLocation + TraceDirection * 100.f;
-	DrawDebugLine(GetWorld(), StartLocation, EndPoint, FColor::Magenta, false, .12f);
 }
-void ATopDownCharacter::TraceForClosestTargetInDirection(FVector StartLocation, FVector EndPoint)
+
+void ATopDownCharacter::TraceForClosestTargetInDirection()
 {
+	const FVector StartLocation = GetActorLocation();
+	const FVector EndPoint = StartLocation + (TraceDirection * TraceDistance);
+	DrawDebugLine(GetWorld(), StartLocation, EndPoint, FColor::White, true);
+	
 	// Trace for Targets in Facing direction
-	TArray<FHitResult> HitResults;
 	FCollisionQueryParams CollisionQueryParams;
 	CollisionQueryParams.AddIgnoredActor(this);
 		
-	FCollisionShape SphereShape = FCollisionShape::MakeSphere(CollisionShapeRadius);
+	const FCollisionShape SphereShape = FCollisionShape::MakeSphere(CollisionShapeRadius);
 		
-	bool bHit = GetWorld()->SweepMultiByChannel(
+	bool Results = GetWorld()->SweepMultiByChannel(
 		HitResults,
 		StartLocation,
 		EndPoint,
 		FQuat::Identity,
-		ECC_WorldDynamic,
+		ECC_Visibility,
 		SphereShape,
 		CollisionQueryParams
 	);
-		
+
 	// Get Closest Target
-	if(bHit)
+	if(Results)
 	{
-		const AActor* ClosestTarget = nullptr;
+		AEnemy* ClosestTarget = nullptr;
 		float MinDistance = FLT_MAX;
 
 		for(const FHitResult& Hit : HitResults)
 		{
-			const AActor* HitActor = Hit.GetActor();
-			if(HitActor)
+			if(AEnemy* Enemy = static_cast<AEnemy*>(Hit.GetActor()))
 			{
+				Enemy->SetAsTarget(false);
+				
 				const float Distance = FVector::Dist(StartLocation, Hit.ImpactPoint);
 				if(Distance < MinDistance)
 				{
 					MinDistance = Distance;
-					ClosestTarget = HitActor;
+					ClosestTarget = Enemy;
 				}
-				DrawDebugSphere(GetWorld(), Hit.ImpactPoint, SphereShape.GetSphereRadius(), 12, FColor::Red, false, 1.f);
 			}
 		}
 
 		if(ClosestTarget)
 		{
+			ClosestTarget->SetAsTarget(true);
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green,
 			                                 FString::Printf(TEXT("Closest Target: %s"), *ClosestTarget->GetName()));
 		}
-	}
-	else
-	{
-		DrawDebugSphere(GetWorld(), EndPoint, SphereShape.GetSphereRadius(), 4, FColor::White, false, .3f);
 	}
 }
 
@@ -246,11 +243,8 @@ void ATopDownCharacter::Tick(float DeltaTime)
 		ChangeFlipBookAnimation(bHasGunEquipped);
 		UpdateGunAnimation(bHasGunEquipped);
 
-		FVector StartLocation;
-		FVector EndPoint;
-		SetTraceDirection(StartLocation, EndPoint);
-
-		TraceForClosestTargetInDirection(StartLocation, EndPoint);
+		SetTraceDirection();
+		TraceForClosestTargetInDirection();
 	}
 }
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PaperFlipbookComponent.h"
+#include "PaperSpriteComponent.h"
 #include "TopDownCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Actor.h"
@@ -49,6 +50,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<ATopDownCharacter> PlayerTarget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UPaperSpriteComponent> TargetMarker;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool bIsAlive{true};
 
@@ -66,7 +70,10 @@ public:
 
 public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	
+
+	UFUNCTION()
+	void SetAsTarget(const bool bIsTarget);
+		
 private:
 	UPROPERTY(VisibleAnywhere)
 	float DistanceToTarget{};

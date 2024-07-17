@@ -14,6 +14,9 @@ AEnemy::AEnemy()
 
 	FlipBookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
 	FlipBookComponent->SetupAttachment(RootComponent);
+	
+	TargetMarker = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Marker"));
+	TargetMarker->SetupAttachment(RootComponent);
 }
 
 void AEnemy::BeginPlay()
@@ -141,6 +144,16 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	}
 	
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+
+void AEnemy::SetAsTarget(const bool bIsTarget)
+{
+	if(!TargetMarker)
+	{
+		return;
+	}
+	
+	TargetMarker->SetVisibility(bIsTarget);
 }
 
 void AEnemy::UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Facing)

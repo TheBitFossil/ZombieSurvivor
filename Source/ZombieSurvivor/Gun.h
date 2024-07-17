@@ -51,7 +51,7 @@ public:
 	void SetAnimation(const bool bIsMoving, const EDirectionFacing& Direction) const;
 
 	UFUNCTION()
-	void Shoot(const EDirectionFacing& Facing);
+	void Shoot(const EDirectionFacing& Facing, const FVector& TargetPosition);
 	
 	virtual void BeginPlay() override;
 

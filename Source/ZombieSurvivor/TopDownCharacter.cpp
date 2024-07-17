@@ -172,7 +172,7 @@ void ATopDownCharacter::TraceForClosestTargetInDirection()
 {
 	const FVector StartLocation = GetActorLocation();
 	const FVector EndPoint = StartLocation + (TraceDirection * TraceDistance);
-	DrawDebugLine(GetWorld(), StartLocation, EndPoint, FColor::White, true);
+	DrawDebugLine(GetWorld(), StartLocation, EndPoint, FColor::White, false, .2f);
 	
 	// Trace for Targets in Facing direction
 	FCollisionQueryParams CollisionQueryParams;
@@ -193,14 +193,19 @@ void ATopDownCharacter::TraceForClosestTargetInDirection()
 	// Get Closest Target
 	if(Results)
 	{
-		AEnemy* ClosestTarget = nullptr;
 		float MinDistance = FLT_MAX;
 
 		for(const FHitResult& Hit : HitResults)
 		{
 			if(AEnemy* Enemy = static_cast<AEnemy*>(Hit.GetActor()))
 			{
-				Enemy->SetAsTarget(false);
+				//Ignore Dead enemies
+				if(!Enemy->bIsAlive)
+				{
+					continue;
+				}
+				
+				Enemy->SetIsTarget(false);
 				
 				const float Distance = FVector::Dist(StartLocation, Hit.ImpactPoint);
 				if(Distance < MinDistance)
@@ -213,10 +218,14 @@ void ATopDownCharacter::TraceForClosestTargetInDirection()
 
 		if(ClosestTarget)
 		{
-			ClosestTarget->SetAsTarget(true);
+			ClosestTarget->SetIsTarget(true);
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green,
-			                                 FString::Printf(TEXT("Closest Target: %s"), *ClosestTarget->GetName()));
+				FString::Printf(TEXT("Closest Target: %s"), *ClosestTarget->GetName()));
 		}
+	}
+	else
+	{
+		ResetTarget();
 	}
 }
 
@@ -244,7 +253,10 @@ void ATopDownCharacter::Tick(float DeltaTime)
 		UpdateGunAnimation(bHasGunEquipped);
 
 		SetTraceDirection();
-		TraceForClosestTargetInDirection();
+		if(bHasGunEquipped)
+		{
+			TraceForClosestTargetInDirection();
+		}
 	}
 }
 
@@ -287,10 +299,28 @@ void ATopDownCharacter::Shoot(const FInputActionValue& Value)
 	
 	if(AGun* Gun = static_cast<AGun*>(GunChildActor->GetChildActor()))
 	{
-		Gun->Shoot(GetDirectionFacing());
+		if(ClosestTarget)
+		{
+			const FVector TargetLocation = ClosestTarget->GetActorLocation();
+			const FVector TargetLocation2D = FVector(TargetLocation.X, 0.f, TargetLocation.Z);
+			Gun->Shoot(GetDirectionFacing(), TargetLocation2D);
+		}
+		else
+		{
+			Gun->Shoot(GetDirectionFacing(), FVector::Zero());
+		}
 	}
 	// Subtract Bullets ?
 	// Play Animation/VFX ?
+}
+
+void ATopDownCharacter::ResetTarget()
+{
+	if(ClosestTarget)
+	{
+		ClosestTarget->SetIsTarget(false);
+		ClosestTarget = nullptr;
+	}
 }
 
 void ATopDownCharacter::EquipGun()
@@ -307,6 +337,8 @@ void ATopDownCharacter::EquipGun()
 			PC->CurrentMouseCursor = EMouseCursor::Type::Default;
 		}
 	}
+
+	ResetTarget();
 	
 	if(AGun* Gun = static_cast<AGun*>(GunChildActor->GetChildActor()))
 	{
@@ -323,11 +355,11 @@ void ATopDownCharacter::CalculateMousePositionInWorld()
 		FVector WorldLocation, WorldDirection;
 		bool MouseWorldPos = PC->DeprojectMousePositionToWorld(WorldLocation, WorldDirection);
 
-		FVector Location = GetActorLocation();
-		FVector Start = FVector(Location.X, 0.f, Location.Z);
-		FVector Target = FVector(WorldLocation.X, 0.f, WorldLocation.Z);
+		const FVector Location = GetActorLocation();
+		const FVector Start = FVector(Location.X, 0.f, Location.Z);
+		const FVector Target = FVector(WorldLocation.X, 0.f, WorldLocation.Z);
 		// Only use 2D Vector for Rotation
-		FRotator Rotation = UKismetMathLibrary::FindLookAtRotation(Start, Target);
+		const FRotator Rotation = UKismetMathLibrary::FindLookAtRotation(Start, Target);
 
 		Marker->SetRelativeRotation(Rotation);
 	}

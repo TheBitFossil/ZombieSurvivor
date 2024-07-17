@@ -4,6 +4,7 @@
 
 #include "Bullet.h"
 #include "TopDownCharacter.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AGun::AGun()
 {
@@ -29,7 +30,6 @@ AGun::AGun()
 		GunMuzzles[i] = CreateDefaultSubobject<USceneComponent>(GunMuzzleNames[i]);
 		GunMuzzles[i]->SetupAttachment(RootComponent);
 	}
-	
 }
 
 void AGun::BeginPlay()
@@ -75,7 +75,7 @@ void AGun::SetAnimation(const bool bIsMoving, const EDirectionFacing& Direction)
 	}
 }
 
-void AGun::Shoot(const EDirectionFacing& Facing)
+void AGun::Shoot(const EDirectionFacing& Facing, const FVector& TargetPosition)
 {
 	if(bCanShoot)
 	{
@@ -85,6 +85,12 @@ void AGun::Shoot(const EDirectionFacing& Facing)
 		// Where to spawn and how to rotate the bullet
 		FVector SpawnLocation = GunMuzzles[idx]->GetComponentLocation();
 		FRotator SpawnRotation = GunMuzzles[idx]->GetComponentRotation();
+
+		// Aim Bullet at Target, Rotate the Muzzle 
+		if(TargetPosition != FVector::Zero())
+		{
+			SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, TargetPosition);
+		}
 		
 		if(BulletClass)
 		{
@@ -106,6 +112,9 @@ void AGun::Shoot(const EDirectionFacing& Facing)
 			}
 			GetWorldTimerManager().SetTimer(FireRateTimer, this, &AGun::OnFireRateTimerTimeOut,
 				1.f, false, FireRate);
+
+			// Reset Auto Aim Rotation
+			SpawnRotation = GunMuzzles[idx]->GetComponentRotation();
 		}
 	}
 }

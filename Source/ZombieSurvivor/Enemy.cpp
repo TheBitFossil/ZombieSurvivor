@@ -17,6 +17,7 @@ AEnemy::AEnemy()
 	
 	TargetMarker = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Marker"));
 	TargetMarker->SetupAttachment(RootComponent);
+	TargetMarker->SetVisibility(false);
 }
 
 void AEnemy::BeginPlay()
@@ -90,7 +91,6 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	
 	if(PlayerTarget && bIsAlive)
 	{
 		const FVector Location = GetActorLocation();
@@ -119,6 +119,11 @@ void AEnemy::Tick(float DeltaTime)
 		CurrentState = EState::IDLE;
 	}
 
+	// Show TargetMarker if is the closest Target
+	if(TargetMarker)
+	{
+		TargetMarker->SetVisibility(bIsTarget);
+	}
 	UpdateFlipBookAnim(CurrentState, DirectionFacing);
 }
 
@@ -146,14 +151,9 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
-void AEnemy::SetAsTarget(const bool bIsTarget)
+void AEnemy::SetIsTarget(const bool Value)
 {
-	if(!TargetMarker)
-	{
-		return;
-	}
-	
-	TargetMarker->SetVisibility(bIsTarget);
+	bIsTarget = Value;
 }
 
 void AEnemy::UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Facing)
@@ -182,6 +182,7 @@ void AEnemy::UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Fac
 	case EState::DEAD:
 		NextFlipBookArray = &FB_Death;
 		FlipBookComponent->SetLooping(false);
+		TargetMarker->SetVisibility(false);
 		break;
 	}
 

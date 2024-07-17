@@ -68,12 +68,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float DespawnTime{10.f};
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsTarget{false};
+	
 public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	UFUNCTION()
-	void SetAsTarget(const bool bIsTarget);
-		
+	void SetIsTarget(bool Value);
+
+	UFUNCTION()
+	bool GetIsTarget() const {return bIsTarget;}
+	
 private:
 	UPROPERTY(VisibleAnywhere)
 	float DistanceToTarget{};

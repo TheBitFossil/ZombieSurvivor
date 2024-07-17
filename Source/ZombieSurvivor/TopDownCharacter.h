@@ -19,6 +19,8 @@ enum class EDirectionFacing : uint8
 	RIGHT
 };
 
+class AEnemy;
+
 UCLASS()
 class ZOMBIESURVIVOR_API ATopDownCharacter : public APawn
 {
@@ -108,6 +110,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TArray<FHitResult> HitResults;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<AEnemy> ClosestTarget = nullptr;
 	
 	UFUNCTION()
 	EDirectionFacing CalculateFacingDirection(const FVector2D& Value);
@@ -120,6 +125,7 @@ private:
 
 	UFUNCTION()
 	void Shoot(const FInputActionValue& Value);
+	void ResetTarget();
 
 	UFUNCTION()
 	void EquipGun();

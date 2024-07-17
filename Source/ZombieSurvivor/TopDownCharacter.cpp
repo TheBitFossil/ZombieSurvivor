@@ -309,6 +309,8 @@ void ATopDownCharacter::Shoot(const FInputActionValue& Value)
 		{
 			Gun->Shoot(GetDirectionFacing(), FVector::Zero());
 		}
+
+		ResetTarget();
 	}
 	// Subtract Bullets ?
 	// Play Animation/VFX ?

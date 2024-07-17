@@ -84,12 +84,20 @@ void AGun::Shoot(const EDirectionFacing& Facing, const FVector& TargetPosition)
 
 		// Where to spawn and how to rotate the bullet
 		FVector SpawnLocation = GunMuzzles[idx]->GetComponentLocation();
-		FRotator SpawnRotation = GunMuzzles[idx]->GetComponentRotation();
-
-		// Aim Bullet at Target, Rotate the Muzzle 
+		FRotator SpawnRotationDefault = GunMuzzles[idx]->GetComponentRotation();
+		
+		FRotator SpawnRotationOffset{};
+		FRotator SpawnRotation{};
+		
+		// Check if we have a Target, add Auto Aim
 		if(TargetPosition != FVector::Zero())
 		{
-			SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, TargetPosition);
+			SpawnRotationOffset = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, TargetPosition);
+			SpawnRotation = SpawnRotationOffset;
+		}
+		else
+		{
+			SpawnRotation = SpawnRotationDefault;
 		}
 		
 		if(BulletClass)
@@ -113,8 +121,8 @@ void AGun::Shoot(const EDirectionFacing& Facing, const FVector& TargetPosition)
 			GetWorldTimerManager().SetTimer(FireRateTimer, this, &AGun::OnFireRateTimerTimeOut,
 				1.f, false, FireRate);
 
-			// Reset Auto Aim Rotation
-			SpawnRotation = GunMuzzles[idx]->GetComponentRotation();
+			// Reset Auto Aim Rotation after the Shot
+			SpawnRotation = SpawnRotationDefault;
 		}
 	}
 }

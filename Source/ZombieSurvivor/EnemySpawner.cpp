@@ -72,31 +72,38 @@ void AEnemySpawner::SpawnEnemy()
 		NewEnemy->SetTarget(PlayerTarget);
 		NewEnemy->EnemyDiedDelegate.AddDynamic(this, &AEnemySpawner::OnEnemyDied);
 		
-		TotalEnemySpawnCount += 1;
-		DifficultySettings(TotalEnemySpawnCount);
+		SpawnedEnemies.AddUnique(NewEnemy);
+		DifficultySettings(SpawnedEnemies.Num());
 	}
 }
 
 void AEnemySpawner::OnEnemyDied()
 {
-
-	
+	int ScoreToAdd = 10;
+	GameModeTopDown->AddScore(ScoreToAdd);
 }
-
 
 void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if(AGameModeBase* GameMode = UGameplayStatics::GetGameMode(GetWorld()))
+	{
+		GameModeTopDown = static_cast<AGameModeTopDown*>(GameMode);
+	}
+	
 	// Enemies should have the player from start
 	if(PlayerTarget == nullptr)
 	{
 		if(AActor* Actor = UGameplayStatics::GetActorOfClass(GetWorld(), ATopDownCharacter::StaticClass()))
 		{
 			PlayerTarget = static_cast<ATopDownCharacter*>(Actor);
+			PlayerTarget->OnPlayerDeath.AddDynamic(this, &AEnemySpawner::OnPlayerDeath);
 			//DrawDebugLine(GetWorld(), GetActorLocation(),PlayerTarget->GetActorLocation(), FColor::Red, true);
 		}
 	}
+
+	SpawnedEnemies.Empty();
 	
 	StartSpawnTimer();
 }
@@ -106,3 +113,19 @@ void AEnemySpawner::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void AEnemySpawner::OnPlayerDeath()
+{
+	//StopSpawnTimer();
+	if(SpawnedEnemies.Num() > 0)
+	{
+		for (AEnemy* Enemy : SpawnedEnemies)
+		{
+			if(Enemy->bIsAlive)
+			{
+				Enemy->MoveSpeed = 0.f;
+			}
+		}
+	}
+	
+	// GameMode->RestartGame();
+}

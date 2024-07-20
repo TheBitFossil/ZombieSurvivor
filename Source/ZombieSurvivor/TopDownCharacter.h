@@ -21,6 +21,9 @@ enum class EDirectionFacing : uint8
 
 class AEnemy;
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerDeathDelegate);
+
 UCLASS()
 class ZOMBIESURVIVOR_API ATopDownCharacter : public APawn
 {
@@ -28,6 +31,9 @@ class ZOMBIESURVIVOR_API ATopDownCharacter : public APawn
 
 public:
 	ATopDownCharacter();
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category=VisualDebug)
+	bool DebugEnabled{false};
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UCapsuleComponent> CapsuleComponent;
@@ -84,6 +90,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	float TraceOffset{20.f};
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsAlive{true};
+
+	FPlayerDeathDelegate OnPlayerDeath;
 	
 	// UP/ DOWN / RIGHT / LEFT
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)
@@ -103,7 +114,7 @@ public:
 
 	UFUNCTION()
 	FVector2D GetDirection() const { return Direction; }
-	
+
 private:
 	UPROPERTY(VisibleInstanceOnly)
 	FVector2D Direction {};
@@ -135,6 +146,10 @@ private:
 
 	UFUNCTION()
 	void CalculateMousePositionInWorld();
+
+	UFUNCTION()
+	void OverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 	UFUNCTION()
 	void ChangeFlipBookAnimation(bool bEquipped);

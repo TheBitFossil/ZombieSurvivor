@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Enemy.h"
+#include "GameModeTopDown.h"
 #include "GameFramework/Actor.h"
 #include "EnemySpawner.generated.h"
 
@@ -27,9 +28,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SpawnDistance{200.f};
 
-	UPROPERTY(VisibleAnywhere)
-	int32 TotalEnemySpawnCount{};
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 DifficultySpikeInterval{10};
 
@@ -49,6 +47,12 @@ public:
 	void StopSpawnTimer();
 
 private:
+	UPROPERTY()
+	TObjectPtr<AGameModeTopDown> GameModeTopDown;
+
+	UPROPERTY(VisibleAnywhere)
+	TArray<AEnemy*> SpawnedEnemies {nullptr};
+	
 	UFUNCTION()
 	void OnEnemySpawnTimerTimeout();
 	void DifficultySettings(const int& Count);
@@ -63,4 +67,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION()
+	void OnPlayerDeath();
 };

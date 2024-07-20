@@ -17,7 +17,8 @@ ATopDownCharacter::ATopDownCharacter()
 
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule Comp"));
 	SetRootComponent(CapsuleComponent);
-
+	CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &ATopDownCharacter::OverlapBegin);
+	
 	FlipBookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("FlipbBook Comp"));
 	FlipBookComponent->SetupAttachment(RootComponent);
 	FlipBookComponent->SetTranslucentSortPriority(10);
@@ -173,7 +174,10 @@ void ATopDownCharacter::TraceForClosestTargetInDirection()
 {
 	const FVector StartLocation = GetActorLocation() + (TraceDirection * TraceOffset);
 	const FVector EndPoint = StartLocation + (TraceDirection * TraceDistance);
-	DrawDebugLine(GetWorld(), StartLocation, EndPoint, FColor::Yellow, false, .2f);
+	if(DebugEnabled)
+	{
+		DrawDebugLine(GetWorld(), StartLocation, EndPoint, FColor::Yellow, false, .2f);
+	}
 	
 	// Trace for Targets in Facing direction
 	FCollisionQueryParams CollisionQueryParams;
@@ -190,8 +194,11 @@ void ATopDownCharacter::TraceForClosestTargetInDirection()
 		SphereShape,
 		CollisionQueryParams
 	);
-	DrawDebugSweptSphere(GetWorld(), StartLocation, EndPoint, SphereShape.GetSphereRadius(), FColor::Yellow, false, .2f);
-
+	if(DebugEnabled)
+	{
+		DrawDebugSweptSphere(GetWorld(), StartLocation, EndPoint, SphereShape.GetSphereRadius(), FColor::Yellow, false, .2f);
+	}
+	
 	// Get Closest Target
 	if(Results)
 	{
@@ -367,5 +374,21 @@ void ATopDownCharacter::CalculateMousePositionInWorld()
 		const FRotator Rotation = UKismetMathLibrary::FindLookAtRotation(Start, Target);
 
 		Marker->SetRelativeRotation(Rotation);
+	}
+}
+
+void ATopDownCharacter::OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+{
+	FString Msg = FString::Printf(TEXT("Other Name: %s"), *OtherActor->GetName());
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, Msg);
+
+	if(AEnemy* Enemy = static_cast<AEnemy*>(OtherActor))
+	{
+		if(Enemy->bIsAlive)
+		{
+			bIsAlive = false;
+			OnPlayerDeath.Broadcast();
+		}
 	}
 }

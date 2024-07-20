@@ -51,7 +51,11 @@ public:
 private:
 	UFUNCTION()
 	void OnEnemySpawnTimerTimeout();
+	void DifficultySettings(const int& Count);
 
+	UFUNCTION()
+	void OnEnemyDied();
+	
 	UFUNCTION()
 	void SpawnEnemy();
 

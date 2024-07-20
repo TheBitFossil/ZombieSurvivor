@@ -30,6 +30,28 @@ void AEnemySpawner::OnEnemySpawnTimerTimeout()
 	SpawnEnemy();
 }
 
+void AEnemySpawner::DifficultySettings(const int& Count)
+{
+	// Every 10 Spawned Enemies
+	if(Count %  DifficultySpikeInterval == 0)
+	{
+		// Check if we can decrease the Rate
+		if(SpawnRate > SpawnRateMinimumLimit)
+		{
+			SpawnRate -= DecreaseSpawnRateByEveryInterval;
+			if(SpawnRate < DecreaseSpawnRateByEveryInterval)
+			{
+				// Make sure Rate stays at minimum Lvl
+				SpawnRate = SpawnRateMinimumLimit;
+			}
+			
+			// To Update Timer vars, we need to Stop/Start
+			StopSpawnTimer();
+			StartSpawnTimer();
+		}
+	}
+}
+
 void AEnemySpawner::SpawnEnemy()
 {
 	FVector2D RandomPoint = FVector2D(FMath::VRand());
@@ -48,27 +70,19 @@ void AEnemySpawner::SpawnEnemy()
 	if(NewEnemy)
 	{
 		NewEnemy->SetTarget(PlayerTarget);
+		NewEnemy->EnemyDiedDelegate.AddDynamic(this, &AEnemySpawner::OnEnemyDied);
 		
 		TotalEnemySpawnCount += 1;
-		// Every 10 Spawned Enemies
-		if(TotalEnemySpawnCount %  DifficultySpikeInterval == 0)
-		{
-			// Check if we can decrease the Rate
-			if(SpawnRate > SpawnRateMinimumLimit)
-			{
-				SpawnRate -= DecreaseSpawnRateByEveryInterval;
-				if(SpawnRate < DecreaseSpawnRateByEveryInterval)
-				{
-					// Make sure Rate stays at minimum Lvl
-					SpawnRate = SpawnRateMinimumLimit;
-				}
-				// To Update Timer vars, we need to Stop/Start
-				StopSpawnTimer();
-				StartSpawnTimer();
-			}
-		}
+		DifficultySettings(TotalEnemySpawnCount);
 	}
 }
+
+void AEnemySpawner::OnEnemyDied()
+{
+
+	
+}
+
 
 void AEnemySpawner::BeginPlay()
 {

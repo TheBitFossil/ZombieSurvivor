@@ -49,7 +49,7 @@ public:
 	
 	UFUNCTION()
 	void SetAnimation(const bool bIsMoving, const EDirectionFacing& Direction) const;
-
+	
 	UFUNCTION()
 	void Shoot(const EDirectionFacing& Facing, const FVector& TargetPosition);
 	

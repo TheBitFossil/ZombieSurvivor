@@ -47,9 +47,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)
 	TArray<TObjectPtr<UPaperFlipbook>> FB_Death;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	TObjectPtr<ATopDownCharacter> PlayerTarget;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UPaperSpriteComponent> TargetMarker;
 	
@@ -72,13 +69,17 @@ public:
 	bool bIsTarget{false};
 	
 public:
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
+		AController* EventInstigator, AActor* DamageCauser) override;
 
 	UFUNCTION()
 	void SetIsTarget(bool Value);
 
 	UFUNCTION()
 	bool GetIsTarget() const {return bIsTarget;}
+
+	UFUNCTION()
+	void SetTarget(ATopDownCharacter* Target);
 	
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -98,6 +99,9 @@ private:
 	
 	UFUNCTION()
 	EDirectionFacing CalculateFacingDirection();
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ATopDownCharacter> PlayerTarget;
 	
 	UFUNCTION()
 	void ChasePlayer(const float& Delta);

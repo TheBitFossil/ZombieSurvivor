@@ -3,7 +3,6 @@
 
 #include "Enemy.h"
 
-#include "Kismet/GameplayStatics.h"
 
 AEnemy::AEnemy()
 {
@@ -23,16 +22,6 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Enemies should have the player from start
-	if(PlayerTarget == nullptr)
-	{
-		if(AActor* Actor = UGameplayStatics::GetActorOfClass(GetWorld(), ATopDownCharacter::StaticClass()))
-		{
-			PlayerTarget = static_cast<ATopDownCharacter*>(Actor);
-			//DrawDebugLine(GetWorld(), GetActorLocation(),PlayerTarget->GetActorLocation(), FColor::Red, true);
-		}
-	}
 }
 
 EDirectionFacing AEnemy::CalculateFacingDirection()
@@ -145,7 +134,8 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 		// Change Draw Order
 		const int32 Sort = FlipBookComponent->TranslucencySortPriority;
 		FlipBookComponent->SetTranslucentSortPriority(Sort - 1);
-		GetWorldTimerManager().SetTimer(DespawnTimerHandle, this, &AEnemy::OnDespawnTimerTimeout, 1.f, false, DespawnTime);
+		GetWorldTimerManager().SetTimer(DespawnTimerHandle, this, &AEnemy::OnDespawnTimerTimeout,
+			1.f, false, DespawnTime);
 	}
 	
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
@@ -154,6 +144,16 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 void AEnemy::SetIsTarget(const bool Value)
 {
 	bIsTarget = Value;
+}
+
+void AEnemy::SetTarget(ATopDownCharacter* Target)
+{
+	if(!Target)
+	{
+		return;
+	}
+		
+	PlayerTarget = Target;
 }
 
 void AEnemy::UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Facing)

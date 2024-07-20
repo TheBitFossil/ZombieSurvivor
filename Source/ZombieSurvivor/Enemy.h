@@ -69,6 +69,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsTarget{false};
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Sound)
+	TObjectPtr<USoundBase> DeathSound;
+	
 	FEnemyDiedDelegate EnemyDiedDelegate;
 	
 public:

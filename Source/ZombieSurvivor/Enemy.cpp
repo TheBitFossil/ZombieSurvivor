@@ -3,6 +3,8 @@
 
 #include "Enemy.h"
 
+#include "Kismet/GameplayStatics.h"
+
 
 AEnemy::AEnemy()
 {
@@ -160,9 +162,6 @@ void AEnemy::UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Fac
 		return;
 	}
 	
-	// Animation to play
-	UPaperFlipbook* NextFlipBook  = nullptr;
-
 	// Sync Array refs with current State
 	const TArray<TObjectPtr<UPaperFlipbook>>* NextFlipBookArray = nullptr;
 	switch (State)
@@ -181,6 +180,9 @@ void AEnemy::UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Fac
 		break;
 	}
 
+	// Animation to play
+	UPaperFlipbook* NextFlipBook  = nullptr;
+	
 	// Choose correct facing from our Array
 	if(NextFlipBookArray)
 	{
@@ -206,6 +208,7 @@ void AEnemy::Death()
 
 	// Inform Spawner
 	EnemyDiedDelegate.Broadcast();
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
 	
 	GetWorldTimerManager().SetTimer(DespawnTimerHandle, this, &AEnemy::OnDespawnTimerTimeout,
 		1.f, false, DespawnTime);

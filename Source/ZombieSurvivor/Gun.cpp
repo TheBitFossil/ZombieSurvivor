@@ -4,6 +4,7 @@
 
 #include "Bullet.h"
 #include "TopDownCharacter.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 AGun::AGun()
@@ -40,38 +41,31 @@ void AGun::BeginPlay()
 
 void AGun::SetAnimation(const bool bIsMoving, const EDirectionFacing& Direction) const
 {
-	TArray<UPaperFlipbook*> NextFlipBook;
 	if(!bIsEquipped)
 	{
 		return;
 	}
-	
+
+	const TArray<TObjectPtr<UPaperFlipbook>>* NextFlipBookArray;
 	if(bIsMoving)
 	{
-		NextFlipBook = FB_Walk;
+		NextFlipBookArray = &FB_Walk;
 	}
 	else
 	{
-		NextFlipBook = FB_Idle;
+		NextFlipBookArray = &FB_Idle;
 	}
 
-	if (!NextFlipBook.IsEmpty() && FlipBookComponent != nullptr)
+	UPaperFlipbook* NextFlipBook = nullptr;
+	if (NextFlipBookArray)
 	{
-		switch (Direction)
+		const int32 Idx = static_cast<uint32>(Direction);
+		if(Idx < NextFlipBookArray->Num())
 		{
-		case EDirectionFacing::UP:
-			FlipBookComponent->SetFlipbook(NextFlipBook[0]);
-			break;
-		case EDirectionFacing::DOWN:
-			FlipBookComponent->SetFlipbook(NextFlipBook[1]);
-			break;
-		case EDirectionFacing::RIGHT:
-			FlipBookComponent->SetFlipbook(NextFlipBook[2]);
-			break;
-		case EDirectionFacing::LEFT:
-			FlipBookComponent->SetFlipbook(NextFlipBook[3]);
-			break;
+			NextFlipBook = (*NextFlipBookArray)[Idx];
 		}
+		
+		FlipBookComponent->SetFlipbook(NextFlipBook);
 	}
 }
 
@@ -117,7 +111,9 @@ void AGun::Shoot(const EDirectionFacing& Facing, const FVector& TargetPosition)
 			if(NewBullet)
 			{
 				NewBullet->InitStats(SpawnRotation, BulletSpeed);
+				UGameplayStatics::PlaySound2D(GetWorld(), ShootSound);
 			}
+
 			GetWorldTimerManager().SetTimer(FireRateTimer, this, &AGun::OnFireRateTimerTimeOut,
 				1.f, false, FireRate);
 
@@ -134,5 +130,11 @@ void AGun::Tick(float DeltaTime)
 
 void AGun::OnFireRateTimerTimeOut()
 {
-	bCanShoot = true;
+	if(ATopDownCharacter* GunOwner = static_cast<ATopDownCharacter*>(Owner))
+	{
+		if(GunOwner->bIsAlive)
+		{
+			bCanShoot = true;
+		}
+	}
 }

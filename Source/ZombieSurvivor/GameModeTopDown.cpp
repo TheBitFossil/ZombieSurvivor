@@ -3,6 +3,8 @@
 
 #include "GameModeTopDown.h"
 
+#include "Kismet/GameplayStatics.h"
+
 AGameModeTopDown::AGameModeTopDown()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -26,3 +28,21 @@ void AGameModeTopDown::AddScore(const int Value)
 	OnScoreChangedDelegate.Broadcast(Score);
 }
 
+void AGameModeTopDown::RestartGame()
+{
+	GetWorldTimerManager().SetTimer
+	(
+		RestartTimerHandle,
+		this,
+		&AGameModeTopDown::OnRestartGameTimerTimeout,
+		1.f,
+		false,
+		TimeBeforeLevelRestart
+	);
+}
+
+void AGameModeTopDown::OnRestartGameTimerTimeout()
+{
+	const FName LevelToLoad = FName("Main");
+	UGameplayStatics::OpenLevel(GetWorld(), LevelToLoad, true);
+}

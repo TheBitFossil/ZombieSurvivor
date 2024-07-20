@@ -11,12 +11,22 @@
 #include "TopDownCharacter.generated.h"
 
 UENUM()
-enum class EDirectionFacing : uint8
+enum class EDirectionFacing : uint32
 {
 	UP,
 	DOWN,
 	LEFT,
 	RIGHT
+};
+
+UENUM()
+enum class EPlayerStates : uint32
+{
+	IDLE_UNARMED,
+	IDLE_GUN,
+	WALKING_UNARMED,
+	WALKING_GUN,
+	DEAD
 };
 
 class AEnemy;
@@ -79,9 +89,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Input)
 	float MoveSpeed {200.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Input)
-	bool bCanMove {true};
-
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Gameplay);
 	float CollisionShapeRadius{50.f};
 
@@ -91,7 +98,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	float TraceOffset{20.f};
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Gameplay)
 	bool bIsAlive{true};
 
 	FPlayerDeathDelegate OnPlayerDeath;
@@ -109,9 +116,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)
 	TArray<TObjectPtr<UPaperFlipbook>> FB_Shoot_Walk;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FlipBooks)
+	TArray<TObjectPtr<UPaperFlipbook>> FB_Death;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Sound)
+	TObjectPtr<USoundBase> DeathSound;
+	
 	UFUNCTION()
 	EDirectionFacing GetDirectionFacing() const { return DirectionFacing; }
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	EPlayerStates States;
+	
 	UFUNCTION()
 	FVector2D GetDirection() const { return Direction; }
 
@@ -139,6 +155,8 @@ private:
 
 	UFUNCTION()
 	void Shoot(const FInputActionValue& Value);
+
+	UFUNCTION()
 	void ResetTarget();
 
 	UFUNCTION()
@@ -152,7 +170,7 @@ private:
 			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 	UFUNCTION()
-	void ChangeFlipBookAnimation(bool bEquipped);
+	void ChangeFlipBookAnimation(const EPlayerStates& EStates);
 
 	UFUNCTION()
 	void UpdateGunAnimation(bool bEquipped);

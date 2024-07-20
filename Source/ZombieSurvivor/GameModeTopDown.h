@@ -19,16 +19,28 @@ class ZOMBIESURVIVOR_API AGameModeTopDown : public AGameModeBase
 public:
 	AGameModeTopDown();
 
+protected:
+	virtual void BeginPlay() override;
+	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TimeBeforeLevelRestart{1.f};
+	
 	UFUNCTION()
 	int32 GetScore() const {return Score;}
 	
 	UFUNCTION()
 	void AddScore(int Value);
-	
-protected:
-	virtual void BeginPlay() override;
-	
+
+	UFUNCTION()
+	void RestartGame();
+
+	UFUNCTION()
+	void OnRestartGameTimerTimeout();
+
 private:
+	FTimerHandle RestartTimerHandle;
+
 	UPROPERTY(BlueprintAssignable, meta=(AllowPrivateAccess="true"))
 	FScoreChangedDelegate OnScoreChangedDelegate;
 	
@@ -37,5 +49,4 @@ private:
 
 	UFUNCTION()
 	void SetScore(int Value);
-	
 };

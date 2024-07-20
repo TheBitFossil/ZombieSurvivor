@@ -42,6 +42,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapon)
 	float FireRate {.95f};
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Sound)
+	TObjectPtr<USoundBase> ShootSound;
+	
 	FTimerHandle FireRateTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

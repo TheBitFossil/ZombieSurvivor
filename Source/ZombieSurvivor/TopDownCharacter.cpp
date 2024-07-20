@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Gun.h"
 #include "KismetTraceUtils.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 
@@ -79,37 +80,44 @@ EDirectionFacing ATopDownCharacter::CalculateFacingDirection(const FVector2D& Va
 	return DirectionFacing;
 }
 
-void ATopDownCharacter::ChangeFlipBookAnimation(const bool bEquipped)
+void ATopDownCharacter::ChangeFlipBookAnimation(const EPlayerStates& EStates)
 {
-	// Either Running or Idling
-	TArray<UPaperFlipbook*> NextFlipBook;
-	if (Direction.Length() != 0.f)
-	{
-		NextFlipBook = bEquipped ? FB_Shoot_Walk : FB_Walk;
-	}
-	else
-	{
-		NextFlipBook = bEquipped ? FB_Shoot_Idle : FB_Idle;
-	}
+	// Pointer -> Possible Array Pointers
+	const TArray<TObjectPtr<UPaperFlipbook>>* NextFlipBookArray = nullptr;
 
-	if (!NextFlipBook.IsEmpty() && FlipBookComponent != nullptr)
+	switch (EStates)
 	{
-		switch (CalculateFacingDirection(Direction))
+	case EPlayerStates::IDLE_UNARMED:
+		NextFlipBookArray = &FB_Idle;
+		break;
+	case EPlayerStates::IDLE_GUN:
+		NextFlipBookArray = &FB_Shoot_Idle;
+		break;
+	case EPlayerStates::WALKING_UNARMED:
+		NextFlipBookArray = &FB_Walk;
+		break;
+	case EPlayerStates::WALKING_GUN:
+		NextFlipBookArray = &FB_Shoot_Walk;
+		break;
+	case EPlayerStates::DEAD:
+		NextFlipBookArray = &FB_Death;
+		break;
+	}
+	
+	// Animation to play
+	UPaperFlipbook* NextFlipBook  = nullptr;
+
+	// Choose correct facing from our Array
+	if(NextFlipBookArray)
+	{
+		uint32 Idx = static_cast<uint32>(DirectionFacing);
+		if(Idx < NextFlipBookArray->Num())
 		{
-		case EDirectionFacing::UP:
-			FlipBookComponent->SetFlipbook(NextFlipBook[0]);
-			break;
-		case EDirectionFacing::DOWN:
-			FlipBookComponent->SetFlipbook(NextFlipBook[1]);
-			break;
-		case EDirectionFacing::RIGHT:
-			FlipBookComponent->SetFlipbook(NextFlipBook[2]);
-			break;
-		case EDirectionFacing::LEFT:
-			FlipBookComponent->SetFlipbook(NextFlipBook[3]);
-			break;
+			NextFlipBook = (*NextFlipBookArray)[Idx];
 		}
 	}
+
+	FlipBookComponent->SetFlipbook(NextFlipBook);
 }
 
 void ATopDownCharacter::UpdateGunAnimation(bool bEquipped)
@@ -144,7 +152,7 @@ void ATopDownCharacter::CalculateNextLocation(FVector& NewLocation)
 		NewLocation -= FVector(Velocity.X, 0.f, 0.f);		// Remove any Horizontal Movement
 	}
 
-	NewLocation += FVector(0.f, 0.f, Velocity.Y);	// Add Vertical Movement
+	NewLocation += FVector(0.f, 0.f, Velocity.Y);			// Add Vertical Movement
 	if(!IsInMapBoundsVertical(NewLocation.Z))
 	{
 		NewLocation -= FVector(0.f, 0.f, Velocity.Y);
@@ -194,6 +202,7 @@ void ATopDownCharacter::TraceForClosestTargetInDirection()
 		SphereShape,
 		CollisionQueryParams
 	);
+	
 	if(DebugEnabled)
 	{
 		DrawDebugSweptSphere(GetWorld(), StartLocation, EndPoint, SphereShape.GetSphereRadius(), FColor::Yellow, false, .2f);
@@ -228,8 +237,9 @@ void ATopDownCharacter::TraceForClosestTargetInDirection()
 		if(ClosestTarget)
 		{
 			ClosestTarget->SetIsTarget(true);
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green,
-				FString::Printf(TEXT("Closest Target: %s"), *ClosestTarget->GetName()));
+
+			/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green,
+				FString::Printf(TEXT("Closest Target: %s"), *ClosestTarget->GetName())); */
 		}
 	}
 	else
@@ -241,31 +251,45 @@ void ATopDownCharacter::TraceForClosestTargetInDirection()
 void ATopDownCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	CalculateMousePositionInWorld();
 	
-	if (bCanMove)
+	CalculateMousePositionInWorld();
+
+	if (bIsAlive)
 	{
 		if (Direction.Length() != 0.f)
 		{
+			CalculateFacingDirection(Direction);
+			
 			// Check if we need to normalize due to incorrect speed of two directions
 			if (Direction.Length() > 1.f)
 			{
 				Direction.Normalize();
 			}
 
+			States = bHasGunEquipped ? States = EPlayerStates::WALKING_GUN : States = EPlayerStates::WALKING_UNARMED;
+			
 			FVector NewLocation;
 			CalculateNextLocation(NewLocation);
 			SetActorLocation(NewLocation);
 		}
-		
-		ChangeFlipBookAnimation(bHasGunEquipped);
-		UpdateGunAnimation(bHasGunEquipped);
-
-		SetTraceDirection();
-		if(bHasGunEquipped)
+		else
 		{
-			TraceForClosestTargetInDirection();
+			States = bHasGunEquipped ? States = EPlayerStates::IDLE_GUN : States = EPlayerStates::IDLE_UNARMED;
 		}
+	}
+	else
+	{
+		States = EPlayerStates::DEAD;
+		FlipBookComponent->SetLooping(false);
+	}
+
+	ChangeFlipBookAnimation(States);
+	UpdateGunAnimation(bHasGunEquipped);
+
+	SetTraceDirection();
+	if(bHasGunEquipped)
+	{
+		TraceForClosestTargetInDirection();
 	}
 }
 
@@ -286,9 +310,9 @@ void ATopDownCharacter::MoveTriggered(const FInputActionValue& Value)
 {
 	const FVector2d InputAction = Value.Get<FVector2d>();
 
-	if (bCanMove)
+	if (bIsAlive)
 	{
-		// Base for all calculations
+		// Base for most calculations
 		Direction = InputAction;
 	}
 }
@@ -301,7 +325,7 @@ void ATopDownCharacter::MoveCompleted(const FInputActionValue& Value)
 
 void ATopDownCharacter::Shoot(const FInputActionValue& Value)
 {
-	if(!bHasGunEquipped)
+	if(!bHasGunEquipped || !bIsAlive)
 	{
 		return;
 	}
@@ -321,8 +345,6 @@ void ATopDownCharacter::Shoot(const FInputActionValue& Value)
 
 		ResetTarget();
 	}
-	// Subtract Bullets ?
-	// Play Animation/VFX ?
 }
 
 void ATopDownCharacter::ResetTarget()
@@ -380,15 +402,17 @@ void ATopDownCharacter::CalculateMousePositionInWorld()
 void ATopDownCharacter::OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	FString Msg = FString::Printf(TEXT("Other Name: %s"), *OtherActor->GetName());
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, Msg);
-
-	if(AEnemy* Enemy = static_cast<AEnemy*>(OtherActor))
+	if(OtherActor && OtherActor != this)
 	{
-		if(Enemy->bIsAlive)
+		if(const AEnemy* Enemy = static_cast<AEnemy*>(OtherActor))
 		{
-			bIsAlive = false;
-			OnPlayerDeath.Broadcast();
+			if(Enemy->bIsAlive)
+			{
+				bIsAlive = false;
+				
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
+				OnPlayerDeath.Broadcast();
+			}
 		}
 	}
 }

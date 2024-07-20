@@ -120,12 +120,12 @@ void AEnemySpawner::OnPlayerDeath()
 	{
 		for (AEnemy* Enemy : SpawnedEnemies)
 		{
-			if(Enemy->bIsAlive)
+			if(Enemy && Enemy->bIsAlive )
 			{
-				Enemy->MoveSpeed = 0.f;
+				Enemy->SetTarget(nullptr);
 			}
 		}
 	}
 	
-	// GameMode->RestartGame();
+	GameModeTopDown->RestartGame();
 }

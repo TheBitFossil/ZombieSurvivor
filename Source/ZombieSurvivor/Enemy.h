@@ -19,6 +19,7 @@ enum class EState : uint8
 	DEAD
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEnemyDiedDelegate);
 
 UCLASS()
 class ZOMBIESURVIVOR_API AEnemy : public AActor
@@ -67,6 +68,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsTarget{false};
+
+	FEnemyDiedDelegate EnemyDiedDelegate;
 	
 public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
@@ -109,6 +112,9 @@ private:
 	UFUNCTION()
 	void UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Facing);
 
+	UFUNCTION()
+	void Death();
+	
 	UFUNCTION()
 	void OnDespawnTimerTimeout();
 

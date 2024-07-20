@@ -130,12 +130,9 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	}
 	else
 	{
+		// EnemyDied //
 		bIsAlive = false;
-		// Change Draw Order
-		const int32 Sort = FlipBookComponent->TranslucencySortPriority;
-		FlipBookComponent->SetTranslucentSortPriority(Sort - 1);
-		GetWorldTimerManager().SetTimer(DespawnTimerHandle, this, &AEnemy::OnDespawnTimerTimeout,
-			1.f, false, DespawnTime);
+		Death();
 	}
 	
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
@@ -181,8 +178,6 @@ void AEnemy::UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Fac
 		break;
 	case EState::DEAD:
 		NextFlipBookArray = &FB_Death;
-		FlipBookComponent->SetLooping(false);
-		TargetMarker->SetVisibility(false);
 		break;
 	}
 
@@ -199,6 +194,21 @@ void AEnemy::UpdateFlipBookAnim(const EState& State, const EDirectionFacing& Fac
 	}
 	
 	FlipBookComponent->SetFlipbook(NextFlipBook);
+}
+
+void AEnemy::Death()
+{
+	// Change Draw Order
+	const int32 Sort = FlipBookComponent->TranslucencySortPriority;
+	FlipBookComponent->SetTranslucentSortPriority(Sort - 1);
+	FlipBookComponent->SetLooping(false);
+	TargetMarker->SetVisibility(false);
+
+	// Inform Spawner
+	EnemyDiedDelegate.Broadcast();
+	
+	GetWorldTimerManager().SetTimer(DespawnTimerHandle, this, &AEnemy::OnDespawnTimerTimeout,
+		1.f, false, DespawnTime);
 }
 
 void AEnemy::OnDespawnTimerTimeout()
